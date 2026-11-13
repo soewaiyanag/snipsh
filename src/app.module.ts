@@ -12,6 +12,7 @@ import { AuthModule } from './auth/auth.module.js';
 import { LinksModule } from './links/links.module.js';
 import { ClicksModule } from './clicks/clicks.module.js';
 import { RedirectModule } from './redirect/redirect.module.js';
+import { SafeBrowsingModule } from './safe-browsing/safe-browsing.module.js';
 
 const RATE_LIMIT_WINDOW_MS = 60_000;
 const RATE_LIMIT_REQUESTS = 60;
@@ -33,6 +34,7 @@ const RATE_LIMIT_REQUESTS = 60;
     ClicksModule,
     // must stay last: its /:slug route would otherwise shadow /links
     RedirectModule,
+    SafeBrowsingModule,
   ],
   controllers: [AppController],
   providers: [AppService, { provide: APP_GUARD, useClass: ThrottlerGuard }],
