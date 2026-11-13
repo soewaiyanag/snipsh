@@ -11,8 +11,10 @@ import {
   Query,
   Res,
 } from '@nestjs/common';
+import { Throttle } from '@nestjs/throttler';
 import type { Response } from 'express';
 import { PaginationQueryDto } from '@/common/pagination/pagination-query.dto.js';
+import { CREATE_LINK_RATE_LIMIT } from '@/common/rate-limits.js';
 import { CurrentUser } from '@/auth/decorators/current-user.decorator.js';
 import type { JwtPayload } from '@/auth/jwt-auth.guard.js';
 import { LinksService } from './links.service.js';
@@ -23,6 +25,7 @@ export class LinksController {
   constructor(private readonly linksService: LinksService) {}
 
   @Post()
+  @Throttle(CREATE_LINK_RATE_LIMIT)
   async create(
     @CurrentUser() user: JwtPayload,
     @Body() createLinkDto: CreateLinkDto,
