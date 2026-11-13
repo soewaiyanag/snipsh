@@ -1,6 +1,8 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
+import { APP_GUARD } from '@nestjs/core';
 import { EventEmitterModule } from '@nestjs/event-emitter';
+import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { AppController } from './app.controller.js';
 import { AppService } from './app.service.js';
 import { validateEnv } from './config/env.validation.js';
@@ -11,6 +13,9 @@ import { LinksModule } from './links/links.module.js';
 import { ClicksModule } from './clicks/clicks.module.js';
 import { RedirectModule } from './redirect/redirect.module.js';
 
+const RATE_LIMIT_WINDOW_MS = 60_000;
+const RATE_LIMIT_REQUESTS = 60;
+
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -18,6 +23,9 @@ import { RedirectModule } from './redirect/redirect.module.js';
       validate: validateEnv,
     }),
     EventEmitterModule.forRoot(),
+    ThrottlerModule.forRoot([
+      { ttl: RATE_LIMIT_WINDOW_MS, limit: RATE_LIMIT_REQUESTS },
+    ]),
     PrismaModule,
     UsersModule,
     AuthModule,
@@ -27,6 +35,6 @@ import { RedirectModule } from './redirect/redirect.module.js';
     RedirectModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, { provide: APP_GUARD, useClass: ThrottlerGuard }],
 })
 export class AppModule {}
