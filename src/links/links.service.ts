@@ -1,8 +1,10 @@
 import { randomBytes } from 'node:crypto';
 import {
+  BadRequestException,
   ConflictException,
   ForbiddenException,
   Injectable,
+  Logger,
   NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
@@ -12,6 +14,7 @@ import { PaginationQueryDto } from '@/common/pagination/pagination-query.dto.js'
 import { CreateLinkDto } from './dto/create-link.dto.js';
 import { Plan, Prisma } from '@/generated/prisma/client.js';
 import { PrismaService } from '@/prisma/prisma.service.js';
+import { SafeBrowsingService } from '@/safe-browsing/safe-browsing.service.js';
 import { UsersService } from '@/users/users.service.js';
 
 // 5 random bytes give a 7-character slug that already matches our slug rules
@@ -26,10 +29,13 @@ const generateSlug = () =>
 
 @Injectable()
 export class LinksService {
+  private readonly logger = new Logger(LinksService.name);
+
   constructor(
     private readonly prisma: PrismaService,
     private readonly users: UsersService,
     private readonly clicks: ClicksService,
+    private readonly safeBrowsing: SafeBrowsingService,
   ) {}
 
   // shortcut: a generated slug that collides returns 409, add a retry loop if it ever happens
@@ -55,6 +61,9 @@ export class LinksService {
       }
     }
 
+    // last on purpose: it is the only check that calls another server
+    await this.assertUrlIsSafe(url);
+
     try {
       return await this.prisma.link.create({
         data: { slug: slug ?? generateSlug(), url, userId },
@@ -67,6 +76,20 @@ export class LinksService {
         throw new ConflictException('Slug is already taken');
       }
       throw error;
+    }
+  }
+
+  private async assertUrlIsSafe(url: string) {
+    let isSafe: boolean;
+    try {
+      isSafe = await this.safeBrowsing.isUrlSafe(url);
+    } catch (error) {
+      // fail open: a Google outage must not stop people from creating links
+      this.logger.warn(`Safe Browsing check failed, allowing ${url}`, error);
+      return;
+    }
+    if (!isSafe) {
+      throw new BadRequestException('This URL is flagged as unsafe');
     }
   }
 
