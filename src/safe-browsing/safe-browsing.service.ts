@@ -1,9 +1,9 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import type { Env } from '@/config/env.validation.js';
-import { hasThreats } from './threat-response.js';
 
-const SEARCH_URL = 'https://safebrowsing.googleapis.com/v5/urls:search';
+// Google marks v4 as deprecated; if it stops working, this is the only file to change
+const SEARCH_URL = 'https://safebrowsing.googleapis.com/v4/threatMatches:find';
 const REQUEST_TIMEOUT_MS = 3000;
 
 @Injectable()
@@ -25,15 +25,27 @@ export class SafeBrowsingService {
     if (!this.apiKey) {
       return true;
     }
-    const query = new URLSearchParams({ urls: url, key: this.apiKey });
-    const response = await fetch(`${SEARCH_URL}?${query}`, {
+    const response = await fetch(`${SEARCH_URL}?key=${this.apiKey}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        client: { clientId: 'snipsh-api', clientVersion: '1.0.0' },
+        threatInfo: {
+          threatTypes: ['MALWARE', 'SOCIAL_ENGINEERING', 'UNWANTED_SOFTWARE'],
+          platformTypes: ['ANY_PLATFORM'],
+          threatEntryTypes: ['URL'],
+          threatEntries: [{ url }],
+        },
+      }),
       signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS),
     });
     if (!response.ok) {
       throw new Error(`Safe Browsing answered with status ${response.status}`);
     }
 
-    const isSafe = !hasThreats(new Uint8Array(await response.arrayBuffer()));
+    // a safe url gets an empty answer: {}
+    const { matches } = (await response.json()) as { matches?: unknown[] };
+    const isSafe = !matches?.length;
     if (!isSafe) {
       this.logger.warn(`Blocked unsafe URL: ${url}`);
     }

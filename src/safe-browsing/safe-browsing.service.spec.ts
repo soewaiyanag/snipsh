@@ -1,8 +1,8 @@
 import type { ConfigService } from '@nestjs/config';
 import { SafeBrowsingService } from './safe-browsing.service.js';
 
-const FLAGGED_ANSWER = Uint8Array.from([0x0a, 0x02, 0x0a, 0x00]);
-const SAFE_ANSWER = Uint8Array.from([0x12, 0x03, 0x08, 0xac, 0x02]);
+const FLAGGED_ANSWER = { matches: [{ threatType: 'MALWARE' }] };
+const SAFE_ANSWER = {};
 
 const serviceWith = (apiKey?: string) =>
   new SafeBrowsingService({ get: () => apiKey } as unknown as ConfigService);
@@ -19,7 +19,7 @@ describe('SafeBrowsingService', () => {
   });
 
   it('returns false for a flagged url', async () => {
-    vi.stubGlobal('fetch', async () => new Response(FLAGGED_ANSWER));
+    vi.stubGlobal('fetch', async () => Response.json(FLAGGED_ANSWER));
 
     expect(await serviceWith('key').isUrlSafe('https://bad.example')).toBe(
       false,
@@ -27,7 +27,7 @@ describe('SafeBrowsingService', () => {
   });
 
   it('returns true for a clean url', async () => {
-    vi.stubGlobal('fetch', async () => new Response(SAFE_ANSWER));
+    vi.stubGlobal('fetch', async () => Response.json(SAFE_ANSWER));
 
     expect(await serviceWith('key').isUrlSafe('https://example.com')).toBe(
       true,
