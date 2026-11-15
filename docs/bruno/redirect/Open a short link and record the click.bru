@@ -87,3 +87,36 @@ example {
     }
   }
 }
+
+example {
+  name: 410 Response
+  description: The link was disabled
+  
+  request: {
+    url: {{baseUrl}}/:slug
+    method: GET
+    mode: none
+    params:path: {
+      slug: 
+    }
+  
+    headers: {
+      referer: 
+      user-agent: 
+    }
+  }
+  
+  response: {
+    status: {
+      code: 410
+      text: Gone
+    }
+  
+    body: {
+      type: text
+      content: '''
+  
+      '''
+    }
+  }
+}

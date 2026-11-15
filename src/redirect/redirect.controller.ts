@@ -26,9 +26,15 @@ export class RedirectController {
   ) {}
 
   @ApiOperation({ summary: 'Open a short link and record the click' })
-  @ApiResponse({ status: 302, description: 'Redirects to the original url' })
-  @ApiResponse({ status: 404, description: 'Unknown slug' })
-  @ApiResponse({ status: 410, description: 'The link was disabled' })
+  @ApiResponse({
+    status: HttpStatus.FOUND,
+    description: 'Redirects to the original url',
+  })
+  @ApiResponse({ status: HttpStatus.NOT_FOUND, description: 'Unknown slug' })
+  @ApiResponse({
+    status: HttpStatus.GONE,
+    description: 'The link was disabled',
+  })
   @Public()
   @Get(':slug')
   @Redirect()

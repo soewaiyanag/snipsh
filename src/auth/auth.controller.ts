@@ -24,10 +24,19 @@ export class AuthController {
   constructor(private readonly auth: AuthService) {}
 
   @ApiOperation({ summary: 'Create an account' })
-  @ApiResponse({ status: 201, description: 'Account created' })
-  @ApiResponse({ status: 400, description: 'Invalid email or password' })
-  @ApiResponse({ status: 409, description: 'Email is already registered' })
-  @ApiResponse({ status: 429, description: 'Too many attempts' })
+  @ApiResponse({ status: HttpStatus.CREATED, description: 'Account created' })
+  @ApiResponse({
+    status: HttpStatus.BAD_REQUEST,
+    description: 'Invalid email or password',
+  })
+  @ApiResponse({
+    status: HttpStatus.CONFLICT,
+    description: 'Email is already registered',
+  })
+  @ApiResponse({
+    status: HttpStatus.TOO_MANY_REQUESTS,
+    description: 'Too many attempts',
+  })
   @Public()
   @Throttle(AUTH_RATE_LIMIT)
   @Post('register')
@@ -36,9 +45,18 @@ export class AuthController {
   }
 
   @ApiOperation({ summary: 'Log in and get an access token' })
-  @ApiResponse({ status: 200, description: 'Returns { accessToken }' })
-  @ApiResponse({ status: 401, description: 'Wrong email or password' })
-  @ApiResponse({ status: 429, description: 'Too many attempts' })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: 'Returns { accessToken }',
+  })
+  @ApiResponse({
+    status: HttpStatus.UNAUTHORIZED,
+    description: 'Wrong email or password',
+  })
+  @ApiResponse({
+    status: HttpStatus.TOO_MANY_REQUESTS,
+    description: 'Too many attempts',
+  })
   @Public()
   @Throttle(AUTH_RATE_LIMIT)
   @Post('login')
@@ -48,16 +66,28 @@ export class AuthController {
   }
 
   @ApiOperation({ summary: 'Show who the token belongs to' })
-  @ApiResponse({ status: 401, description: 'Missing or invalid token' })
+  @ApiResponse({
+    status: HttpStatus.UNAUTHORIZED,
+    description: 'Missing or invalid token',
+  })
   @Get('me')
   me(@CurrentUser() user: JwtPayload) {
     return user;
   }
 
   @ApiOperation({ summary: 'Delete my account, links and clicks' })
-  @ApiResponse({ status: 204, description: 'Account deleted' })
-  @ApiResponse({ status: 401, description: 'Wrong password or invalid token' })
-  @ApiResponse({ status: 429, description: 'Too many attempts' })
+  @ApiResponse({
+    status: HttpStatus.NO_CONTENT,
+    description: 'Account deleted',
+  })
+  @ApiResponse({
+    status: HttpStatus.UNAUTHORIZED,
+    description: 'Wrong password or invalid token',
+  })
+  @ApiResponse({
+    status: HttpStatus.TOO_MANY_REQUESTS,
+    description: 'Too many attempts',
+  })
   @Throttle(AUTH_RATE_LIMIT)
   @Delete('me')
   @HttpCode(HttpStatus.NO_CONTENT)

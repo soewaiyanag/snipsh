@@ -1,0 +1,110 @@
+meta {
+  name: Delete my account, links and clicks
+  type: http
+  seq: 4
+  tags: [
+    auth
+  ]
+}
+
+delete {
+  url: {{baseUrl}}/auth/me
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "password": "{{password}}"
+  }
+}
+
+example {
+  name: 204 Response
+  description: Account deleted
+  
+  request: {
+    url: {{baseUrl}}/auth/me
+    method: DELETE
+    mode: json
+    body:json: {
+      {
+        "password": "{{password}}"
+      }
+    }
+  }
+  
+  response: {
+    status: {
+      code: 204
+      text: No Content
+    }
+  
+    body: {
+      type: text
+      content: '''
+  
+      '''
+    }
+  }
+}
+
+example {
+  name: 401 Response
+  description: Wrong password or invalid token
+  
+  request: {
+    url: {{baseUrl}}/auth/me
+    method: DELETE
+    mode: json
+    body:json: {
+      {
+        "password": "{{password}}"
+      }
+    }
+  }
+  
+  response: {
+    status: {
+      code: 401
+      text: Unauthorized
+    }
+  
+    body: {
+      type: text
+      content: '''
+  
+      '''
+    }
+  }
+}
+
+example {
+  name: 429 Response
+  description: Too many attempts
+  
+  request: {
+    url: {{baseUrl}}/auth/me
+    method: DELETE
+    mode: json
+    body:json: {
+      {
+        "password": "{{password}}"
+      }
+    }
+  }
+  
+  response: {
+    status: {
+      code: 429
+      text: Too Many Requests
+    }
+  
+    body: {
+      type: text
+      content: '''
+  
+      '''
+    }
+  }
+}
