@@ -6,6 +6,7 @@ import {
 import { JwtService } from '@nestjs/jwt';
 import bcrypt from 'bcrypt';
 import { UsersService } from '@/users/users.service.js';
+import { DeleteAccountDto } from './dto/delete-account.dto.js';
 import { LoginDto } from './dto/login.dto.js';
 import { RegisterDto } from './dto/register.dto.js';
 
@@ -39,5 +40,16 @@ export class AuthService {
 
     const accessToken = await this.jwt.signAsync({ sub: user.id });
     return { accessToken };
+  }
+
+  async deleteAccount(userId: string, { password }: DeleteAccountDto) {
+    const user = await this.users.findByIdWithPassword(userId);
+    const passwordMatches =
+      user && (await bcrypt.compare(password, user.passwordHash));
+    if (!user || !passwordMatches) {
+      throw new UnauthorizedException('Wrong password');
+    }
+
+    await this.users.delete(userId);
   }
 }

@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   HttpCode,
   HttpStatus,
@@ -11,6 +12,7 @@ import { Throttle } from '@nestjs/throttler';
 import { AUTH_RATE_LIMIT } from '@/common/rate-limits.js';
 import { AuthService } from './auth.service.js';
 import { CurrentUser } from './decorators/current-user.decorator.js';
+import { DeleteAccountDto } from './dto/delete-account.dto.js';
 import { LoginDto } from './dto/login.dto.js';
 import { RegisterDto } from './dto/register.dto.js';
 import type { JwtPayload } from './jwt-auth.guard.js';
@@ -50,5 +52,19 @@ export class AuthController {
   @Get('me')
   me(@CurrentUser() user: JwtPayload) {
     return user;
+  }
+
+  @ApiOperation({ summary: 'Delete my account, links and clicks' })
+  @ApiResponse({ status: 204, description: 'Account deleted' })
+  @ApiResponse({ status: 401, description: 'Wrong password or invalid token' })
+  @ApiResponse({ status: 429, description: 'Too many attempts' })
+  @Throttle(AUTH_RATE_LIMIT)
+  @Delete('me')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  deleteAccount(
+    @CurrentUser() user: JwtPayload,
+    @Body() dto: DeleteAccountDto,
+  ) {
+    return this.auth.deleteAccount(user.sub, dto);
   }
 }
