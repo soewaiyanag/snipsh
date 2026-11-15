@@ -8,3 +8,7 @@ export const AUTH_RATE_LIMIT = {
 export const CREATE_LINK_RATE_LIMIT = {
   default: { limit: 20, ttl: ONE_MINUTE_MS },
 };
+
+export const REPORT_LINK_RATE_LIMIT = {
+  default: { limit: 5, ttl: ONE_MINUTE_MS },
+};

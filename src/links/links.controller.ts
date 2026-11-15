@@ -15,11 +15,16 @@ import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { Throttle } from '@nestjs/throttler';
 import type { Response } from 'express';
 import { PaginationQueryDto } from '@/common/pagination/pagination-query.dto.js';
-import { CREATE_LINK_RATE_LIMIT } from '@/common/rate-limits.js';
+import {
+  CREATE_LINK_RATE_LIMIT,
+  REPORT_LINK_RATE_LIMIT,
+} from '@/common/rate-limits.js';
+import { Public } from '@/auth/decorators/public.decorator.js';
 import { CurrentUser } from '@/auth/decorators/current-user.decorator.js';
 import type { JwtPayload } from '@/auth/jwt-auth.guard.js';
 import { LinksService } from './links.service.js';
 import { CreateLinkDto } from './dto/create-link.dto.js';
+import { ReportLinkDto } from './dto/report-link.dto.js';
 
 @ApiTags('links')
 @Controller('links')
@@ -114,5 +119,23 @@ export class LinksController {
     @CurrentUser() user: JwtPayload,
   ) {
     return this.linksService.remove(id, user.sub);
+  }
+
+  @ApiOperation({ summary: 'Report a harmful short link' })
+  @ApiResponse({
+    status: HttpStatus.ACCEPTED,
+    description: 'Report saved for review',
+  })
+  @ApiResponse({ status: HttpStatus.NOT_FOUND, description: 'Unknown slug' })
+  @ApiResponse({
+    status: HttpStatus.TOO_MANY_REQUESTS,
+    description: 'Too many reports',
+  })
+  @Public()
+  @Throttle(REPORT_LINK_RATE_LIMIT)
+  @Post('report')
+  @HttpCode(HttpStatus.ACCEPTED)
+  report(@Body() dto: ReportLinkDto) {
+    return this.linksService.report(dto);
   }
 }

@@ -12,6 +12,7 @@ import { ClicksService } from '@/clicks/clicks.service.js';
 import { paginate } from '@/common/pagination/paginate.js';
 import { PaginationQueryDto } from '@/common/pagination/pagination-query.dto.js';
 import { CreateLinkDto } from './dto/create-link.dto.js';
+import { ReportLinkDto } from './dto/report-link.dto.js';
 import { Plan, Prisma } from '@/generated/prisma/client.js';
 import { PrismaService } from '@/prisma/prisma.service.js';
 import { SafeBrowsingService } from '@/safe-browsing/safe-browsing.service.js';
@@ -109,6 +110,14 @@ export class LinksService {
 
   findBySlug(slug: string) {
     return this.prisma.link.findUnique({ where: { slug } });
+  }
+
+  async report({ slug, reason }: ReportLinkDto) {
+    const link = await this.findBySlug(slug);
+    if (!link) {
+      throw new NotFoundException('Link not found');
+    }
+    await this.prisma.report.create({ data: { linkId: link.id, reason } });
   }
 
   async findOne(id: string, userId: string) {
