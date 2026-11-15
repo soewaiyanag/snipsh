@@ -1,3 +1,6 @@
+# Keeps the original project name, so the existing container and its data volume are reused
+name: snip-api
+
 services:
   postgres:
     image: postgres:17-alpine
