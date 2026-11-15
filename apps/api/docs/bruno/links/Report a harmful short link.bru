@@ -1,0 +1,110 @@
+meta {
+  name: Report a harmful short link
+  type: http
+  seq: 6
+  tags: [
+    links
+  ]
+}
+
+post {
+  url: {{baseUrl}}/links/report
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "reason": ""
+  }
+}
+
+example {
+  name: 202 Response
+  description: Report saved for review
+  
+  request: {
+    url: {{baseUrl}}/links/report
+    method: POST
+    mode: json
+    body:json: {
+      {
+        "reason": ""
+      }
+    }
+  }
+  
+  response: {
+    status: {
+      code: 202
+      text: Accepted
+    }
+  
+    body: {
+      type: text
+      content: '''
+  
+      '''
+    }
+  }
+}
+
+example {
+  name: 404 Response
+  description: Unknown slug
+  
+  request: {
+    url: {{baseUrl}}/links/report
+    method: POST
+    mode: json
+    body:json: {
+      {
+        "reason": ""
+      }
+    }
+  }
+  
+  response: {
+    status: {
+      code: 404
+      text: Not Found
+    }
+  
+    body: {
+      type: text
+      content: '''
+  
+      '''
+    }
+  }
+}
+
+example {
+  name: 429 Response
+  description: Too many reports
+  
+  request: {
+    url: {{baseUrl}}/links/report
+    method: POST
+    mode: json
+    body:json: {
+      {
+        "reason": ""
+      }
+    }
+  }
+  
+  response: {
+    status: {
+      code: 429
+      text: Too Many Requests
+    }
+  
+    body: {
+      type: text
+      content: '''
+  
+      '''
+    }
+  }
+}
