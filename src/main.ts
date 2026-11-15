@@ -5,8 +5,8 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { AppModule } from './app.module.js';
 import { AllExceptionsFilter } from './common/filters/all-exceptions.filter.js';
 
-// Render puts exactly one proxy in front of the app
-const TRUSTED_PROXY_HOPS = 1;
+// Render's proxy and Cloudflare sit in front of the app, so the real client is two hops back
+const TRUSTED_PROXY_HOPS = 2;
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
