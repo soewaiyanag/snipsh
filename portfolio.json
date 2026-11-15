@@ -1,0 +1,13 @@
+{
+  "name": "snipsh",
+  "status": "in-development",
+  "summary": "A backend-focused URL shortener, built to learn NestJS: JWT auth, 302 redirects with click analytics, rate limiting and Google Safe Browsing checks, on Prisma and PostgreSQL. The supporting React client was built with Claude Code, so the focus stayed on backend patterns.",
+  "description": "A backend-focused URL shortener, built to learn NestJS core concepts: modules and dependency injection, guards, pipes, exception filters and events. It has JWT auth, 302 redirects with event-driven click tracking and per-link stats, rate limiting tuned to work behind Cloudflare and Render, Google Safe Browsing checks, link reporting, and a relational schema with Prisma and PostgreSQL. The API and the React client live in one monorepo; the client was built with Claude Code, so the focus stayed on backend patterns.",
+  "next": "An admin dashboard with roles and guards, then Redis caching for redirects",
+  "stack": {
+    "frontend": ["React", "TypeScript"],
+    "backend": ["NestJS", "Prisma", "PostgreSQL"]
+  },
+  "github": "https://github.com/soewaiyanag/snipsh",
+  "demo": "https://snipsh-swya.vercel.app"
+}
