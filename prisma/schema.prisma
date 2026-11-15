@@ -25,6 +25,7 @@ model Link {
   id        String   @id @default(uuid()) @db.Uuid
   slug      String   @unique
   url       String
+  isActive  Boolean  @default(true)
   userId    String   @db.Uuid
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   createdAt DateTime @default(now())
