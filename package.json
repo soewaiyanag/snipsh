@@ -1,0 +1,10 @@
+{
+  "name": "snipsh",
+  "private": true,
+  "scripts": {
+    "dev": "docker compose -f apps/api/docker-compose.yml up -d && concurrently --names api,web --prefix-colors blue,green \"yarn --cwd apps/api start:dev\" \"yarn --cwd apps/web dev\""
+  },
+  "devDependencies": {
+    "concurrently": "^10.0.7"
+  }
+}
