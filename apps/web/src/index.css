@@ -1,0 +1,142 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+@import "@fontsource-variable/sora";
+@import "@fontsource-variable/red-hat-mono";
+
+@theme inline {
+  --font-sans: 'Sora Variable', ui-sans-serif, system-ui, sans-serif;
+  --font-mono: 'Red Hat Mono Variable', ui-monospace, monospace;
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --color-foreground: var(--foreground);
+  --color-background: var(--background);
+  /* Controls are pills; panels and dialogs are softly rounded. */
+  --radius-sm: 0.5rem;
+  --radius-md: 0.75rem;
+  --radius-lg: 9999px;
+  --radius-xl: 1.25rem;
+  --radius-2xl: 1.5rem;
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --animate-settle: settle 2.4s ease-out both;
+  /* The main button's hover: a ring of light, standing off the button by a gap of the page colour. */
+  --shadow-halo: 0 0 0 4px var(--background), 0 0 0 6px var(--ring),
+    0 0 28px 6px color-mix(in oklch, var(--primary) 70%, transparent);
+  --shadow-halo-pressed: 0 0 0 2px var(--background), 0 0 0 4px var(--ring), 0 0 40px 10px var(--primary);
+  /* A focused field: a hairline of light on the edge and a soft glow around it. Errors get the
+     hairline in red and no glow, so a mistake is marked without shouting. */
+  --shadow-field: 0 0 0 1px var(--ring), 0 0 24px -4px var(--primary);
+  --shadow-field-invalid: 0 0 0 1px var(--destructive);
+  /* The landing horizon: light above the arc's edge and a little just inside it. */
+  --shadow-horizon: 0 -22px 60px -6px var(--primary), inset 0 26px 70px -20px var(--primary);
+
+  @keyframes settle {
+    from {
+      background-color: var(--accent);
+    }
+  }
+}
+
+/*
+ * Night signal: a blue-black ground, white type, thin white lines for clicks.
+ * Electric blue is the only colour. Dark is the designed look; light is its inverse.
+ */
+:root {
+  color-scheme: light dark;
+  --background: oklch(0.985 0.003 268);
+  --foreground: oklch(0.16 0.02 268);
+  --card: oklch(1 0 0);
+  --card-foreground: var(--foreground);
+  --popover: var(--card);
+  --popover-foreground: var(--foreground);
+  --primary: oklch(0.5 0.25 268);
+  --primary-foreground: oklch(0.99 0 0);
+  --secondary: oklch(0.955 0.006 268);
+  --secondary-foreground: var(--foreground);
+  --muted: oklch(0.955 0.006 268);
+  --muted-foreground: oklch(0.42 0.03 268);
+  --accent: oklch(0.93 0.025 268);
+  --accent-foreground: var(--foreground);
+  --destructive: oklch(0.52 0.21 27);
+  --border: oklch(0.9 0.01 268);
+  --input: oklch(0.6 0.03 268);
+  --ring: var(--primary);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: oklch(0.13 0.02 268);
+    --foreground: oklch(0.97 0.004 268);
+    --card: oklch(0.18 0.025 268);
+    --primary: oklch(0.54 0.25 268);
+    --secondary: oklch(0.22 0.025 268);
+    --muted: oklch(0.22 0.025 268);
+    --muted-foreground: oklch(0.77 0.02 268);
+    --accent: oklch(0.27 0.06 268);
+    --destructive: oklch(0.76 0.16 22);
+    --border: oklch(0.29 0.03 268);
+    --input: oklch(0.55 0.04 268);
+    --ring: oklch(0.76 0.14 268);
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  html {
+    @apply font-sans;
+    scrollbar-color: var(--input) transparent;
+  }
+  body {
+    @apply bg-background text-foreground antialiased;
+    caret-color: var(--ring);
+    overflow-x: clip;
+  }
+  ::selection {
+    background-color: var(--primary);
+    color: var(--primary-foreground);
+  }
+  a {
+    text-underline-offset: 0.25em;
+  }
+  button:not(:disabled),
+  [role="button"]:not(:disabled) {
+    cursor: pointer;
+  }
+}
+
+@utility sheet {
+  @apply rounded-xl border bg-card text-card-foreground;
+}
+
+/* Link strings are case-sensitive codes, so they alone get the mono face. */
+@utility link-text {
+  @apply font-mono;
+  font-variant-ligatures: none;
+  overflow-wrap: anywhere;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-delay: 0ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
