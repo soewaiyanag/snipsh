@@ -30,6 +30,7 @@ model Link {
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   createdAt DateTime @default(now())
   clicks    Click[]
+  reports   Report[]
 }
 
 model Click {
@@ -41,4 +42,14 @@ model Click {
   createdAt DateTime @default(now())
 
   @@index([linkId, createdAt])
+}
+
+model Report {
+  id        String   @id @default(uuid(7)) @db.Uuid
+  linkId    String   @db.Uuid
+  link      Link     @relation(fields: [linkId], references: [id], onDelete: Cascade)
+  reason    String
+  createdAt DateTime @default(now())
+
+  @@index([linkId])
 }
