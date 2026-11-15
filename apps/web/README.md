@@ -3,7 +3,7 @@
 **Long links, cut short.** snipsh turns a long URL into a short link like `snipsh.com/aB3x9` and counts every click it gets.
 
 **Live:** https://snipsh-swya.vercel.app  
-**Backend API:** https://github.com/soewaiyanag/snipsh-api  
+**Backend API:** [`apps/api`](../api)  
 **API deployed at:** https://snipsh-api.onrender.com (work in progress)
 
 Try it with the demo account: `test@gmail.com` / `hesoyam1234`
@@ -35,7 +35,7 @@ A short-link service is a backend. These pages are the front door; the part that
  browser ──▶ snipsh.com/aB3x9 ──▶ API looks up the slug ──▶ 302 ──▶ the long URL
 ```
 
-The frontend never handles the redirect; the API does. See the [API repository](https://github.com/soewaiyanag/snipsh-api) for its endpoints, data model and how to run it.
+The frontend never handles the redirect; the API does. See the [API](../api) for its endpoints, data model and how to run it.
 
 > **Status.** The web app talks to the real API at https://snipsh-api.onrender.com. Set `VITE_USE_MOCKS=true` to run it against a **mock API in the browser** (MSW) instead, which follows the same contract and needs no backend.
 
@@ -87,7 +87,7 @@ They are read and validated once, in `src/env.ts`. `.env` is not committed; `.en
 
 ### Use the real API
 
-1. Run [snipsh-api](https://github.com/soewaiyanag/snipsh-api) on port 3000 and allow CORS from `http://localhost:5173`.
+1. Run the [API](../api) on port 3000 (or `yarn dev` at the repo root for both) and allow CORS from `http://localhost:5173`.
 2. Set `VITE_USE_MOCKS=false` in `.env` and restart `yarn dev`.
 
 Nothing else changes. `BACKEND_REQUESTS.md` lists what the frontend needs from the API that its contract does not yet cover.

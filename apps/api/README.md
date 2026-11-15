@@ -31,12 +31,12 @@ User 1 ──── * Link
 Requirements: Node 22+, Yarn, a PostgreSQL database.
 
 ```bash
-git clone https://github.com/soewaiyanag/snipsh-api.git
-cd snipsh-api
+git clone https://github.com/soewaiyanag/snipsh.git
+cd snipsh/apps/api
 yarn install
 ```
 
-Create a `.env` file in the project root:
+Create a `.env` file in `apps/api`:
 
 ```bash
 DATABASE_URL="postgresql://..."   # pooled connection, used by the app
