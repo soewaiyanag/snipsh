@@ -1,6 +1,5 @@
-import { Controller, Get, Req } from '@nestjs/common';
+import { Controller, Get } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
-import type { Request } from 'express';
 import { Public } from '@/auth/decorators/public.decorator.js';
 import { AppService } from './app.service.js';
 
@@ -15,16 +14,5 @@ export class AppController {
   @Get()
   getHello(): string {
     return this.appService.getHello();
-  }
-
-  // temporary: find how many proxies sit in front of the app, remove after
-  @Public()
-  @Get('debug/ip')
-  debugIp(@Req() req: Request) {
-    return {
-      ip: req.ip,
-      forwardedFor: req.headers['x-forwarded-for'],
-      socket: req.socket.remoteAddress,
-    };
   }
 }
