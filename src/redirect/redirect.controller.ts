@@ -1,6 +1,7 @@
 import {
   Controller,
   Get,
+  GoneException,
   Headers,
   HttpStatus,
   NotFoundException,
@@ -27,6 +28,7 @@ export class RedirectController {
   @ApiOperation({ summary: 'Open a short link and record the click' })
   @ApiResponse({ status: 302, description: 'Redirects to the original url' })
   @ApiResponse({ status: 404, description: 'Unknown slug' })
+  @ApiResponse({ status: 410, description: 'The link was disabled' })
   @Public()
   @Get(':slug')
   @Redirect()
@@ -38,6 +40,9 @@ export class RedirectController {
     const link = await this.links.findBySlug(slug);
     if (!link) {
       throw new NotFoundException('Link not found');
+    }
+    if (!link.isActive) {
+      throw new GoneException('This link has been disabled');
     }
     const event: LinkClickedEvent = { linkId: link.id, referrer, userAgent };
     this.events.emit(LINK_CLICKED, event);
