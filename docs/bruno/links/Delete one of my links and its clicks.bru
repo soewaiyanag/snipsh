@@ -1,0 +1,102 @@
+meta {
+  name: Delete one of my links and its clicks
+  type: http
+  seq: 4
+  tags: [
+    links
+  ]
+}
+
+delete {
+  url: {{baseUrl}}/links/:id
+  body: none
+  auth: inherit
+}
+
+params:path {
+  id: {{linkId}}
+}
+
+example {
+  name: 204 Response
+  description: Deleted
+  
+  request: {
+    url: {{baseUrl}}/links/:id
+    method: DELETE
+    mode: none
+    params:path: {
+      id: 
+    }
+  }
+  
+  response: {
+    status: {
+      code: 204
+      text: No Content
+    }
+  
+    body: {
+      type: text
+      content: '''
+  
+      '''
+    }
+  }
+}
+
+example {
+  name: 403 Response
+  description: The link belongs to another user
+  
+  request: {
+    url: {{baseUrl}}/links/:id
+    method: DELETE
+    mode: none
+    params:path: {
+      id: 
+    }
+  }
+  
+  response: {
+    status: {
+      code: 403
+      text: Forbidden
+    }
+  
+    body: {
+      type: text
+      content: '''
+  
+      '''
+    }
+  }
+}
+
+example {
+  name: 404 Response
+  description: Link not found
+  
+  request: {
+    url: {{baseUrl}}/links/:id
+    method: DELETE
+    mode: none
+    params:path: {
+      id: 
+    }
+  }
+  
+  response: {
+    status: {
+      code: 404
+      text: Not Found
+    }
+  
+    body: {
+      type: text
+      content: '''
+  
+      '''
+    }
+  }
+}

@@ -1,0 +1,23 @@
+meta {
+  name: Create link - own domain is blocked
+  type: http
+  seq: 91
+}
+
+post {
+  url: {{baseUrl}}/links
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "url": "https://snipsh-api.onrender.com/abc"
+  }
+}
+
+tests {
+  test("rejects links to ourselves", function () {
+    expect(res.status).to.equal(400);
+  });
+}

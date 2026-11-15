@@ -1,0 +1,22 @@
+meta {
+  name: snipsh API
+}
+
+auth {
+  mode: bearer
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+script:post-response {
+  // save what later requests need: the login token, and the id and slug of a new link
+  if (res.body?.accessToken) {
+    bru.setEnvVar("token", res.body.accessToken);
+  }
+  if (res.status === 201 && res.body?.slug) {
+    bru.setEnvVar("linkId", res.body.id);
+    bru.setEnvVar("slug", res.body.slug);
+  }
+}

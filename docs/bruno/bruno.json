@@ -1,0 +1,9 @@
+{
+  "version": "1",
+  "name": "snipsh-api",
+  "type": "collection",
+  "ignore": [
+    "node_modules",
+    ".git"
+  ]
+}

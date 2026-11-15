@@ -1,0 +1,67 @@
+meta {
+  name: Show who the token belongs to
+  type: http
+  seq: 3
+  tags: [
+    auth
+  ]
+}
+
+get {
+  url: {{baseUrl}}/auth/me
+  body: none
+  auth: inherit
+}
+
+example {
+  name: 200 Response
+  
+  request: {
+    url: {{baseUrl}}/auth/me
+    method: GET
+    mode: none
+  }
+  
+  response: {
+    headers: {
+      Content-Type: application/json
+    }
+  
+    status: {
+      code: 200
+      text: OK
+    }
+  
+    body: {
+      type: json
+      content: '''
+        {}
+      '''
+    }
+  }
+}
+
+example {
+  name: 401 Response
+  description: Missing or invalid token
+  
+  request: {
+    url: {{baseUrl}}/auth/me
+    method: GET
+    mode: none
+  }
+  
+  response: {
+    status: {
+      code: 401
+      text: Unauthorized
+    }
+  
+    body: {
+      type: text
+      content: '''
+  
+      '''
+    }
+  }
+}

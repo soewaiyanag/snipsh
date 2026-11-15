@@ -1,0 +1,48 @@
+meta {
+  name: List my links, newest first (paginated)
+  type: http
+  seq: 2
+  tags: [
+    links
+  ]
+}
+
+get {
+  url: {{baseUrl}}/links
+  body: none
+  auth: inherit
+}
+
+params:query {
+  page: 1
+  limit: 20
+}
+
+example {
+  name: 200 Response
+  description: { items, total, page, limit }
+  
+  request: {
+    url: {{baseUrl}}/links
+    method: GET
+    mode: none
+    params:query: {
+      page: 1
+      limit: 20
+    }
+  }
+  
+  response: {
+    status: {
+      code: 200
+      text: OK
+    }
+  
+    body: {
+      type: text
+      content: '''
+  
+      '''
+    }
+  }
+}

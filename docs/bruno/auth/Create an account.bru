@@ -1,0 +1,145 @@
+meta {
+  name: Create an account
+  type: http
+  seq: 1
+  tags: [
+    auth
+  ]
+}
+
+post {
+  url: {{baseUrl}}/auth/register
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "email": "{{email}}",
+    "password": "{{password}}"
+  }
+}
+
+example {
+  name: 201 Response
+  description: Account created
+  
+  request: {
+    url: {{baseUrl}}/auth/register
+    method: POST
+    mode: json
+    body:json: {
+      {
+        "email": "{{email}}",
+        "password": "{{password}}"
+      }
+    }
+  }
+  
+  response: {
+    status: {
+      code: 201
+      text: Created
+    }
+  
+    body: {
+      type: text
+      content: '''
+  
+      '''
+    }
+  }
+}
+
+example {
+  name: 400 Response
+  description: Invalid email or password
+  
+  request: {
+    url: {{baseUrl}}/auth/register
+    method: POST
+    mode: json
+    body:json: {
+      {
+        "email": "{{email}}",
+        "password": "{{password}}"
+      }
+    }
+  }
+  
+  response: {
+    status: {
+      code: 400
+      text: Bad Request
+    }
+  
+    body: {
+      type: text
+      content: '''
+  
+      '''
+    }
+  }
+}
+
+example {
+  name: 409 Response
+  description: Email is already registered
+  
+  request: {
+    url: {{baseUrl}}/auth/register
+    method: POST
+    mode: json
+    body:json: {
+      {
+        "email": "{{email}}",
+        "password": "{{password}}"
+      }
+    }
+  }
+  
+  response: {
+    status: {
+      code: 409
+      text: Conflict
+    }
+  
+    body: {
+      type: text
+      content: '''
+  
+      '''
+    }
+  }
+}
+
+example {
+  name: 429 Response
+  description: Too many attempts
+  
+  request: {
+    url: {{baseUrl}}/auth/register
+    method: POST
+    mode: json
+    body:json: {
+      {
+        "email": "{{email}}",
+        "password": "{{password}}"
+      }
+    }
+  }
+  
+  response: {
+    status: {
+      code: 429
+      text: Too Many Requests
+    }
+  
+    body: {
+      type: text
+      content: '''
+  
+      '''
+    }
+  }
+}

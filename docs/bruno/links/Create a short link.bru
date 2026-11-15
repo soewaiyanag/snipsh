@@ -1,0 +1,140 @@
+meta {
+  name: Create a short link
+  type: http
+  seq: 1
+  tags: [
+    links
+  ]
+}
+
+post {
+  url: {{baseUrl}}/links
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "url": "https://docs.nestjs.com"
+  }
+}
+
+example {
+  name: 201 Response
+  description: Created; Location header points at the link
+  
+  request: {
+    url: {{baseUrl}}/links
+    method: POST
+    mode: json
+    body:json: {
+      {
+        "url": "https://docs.nestjs.com"
+      }
+    }
+  }
+  
+  response: {
+    status: {
+      code: 201
+      text: Created
+    }
+  
+    body: {
+      type: text
+      content: '''
+  
+      '''
+    }
+  }
+}
+
+example {
+  name: 400 Response
+  description: Invalid url or slug
+  
+  request: {
+    url: {{baseUrl}}/links
+    method: POST
+    mode: json
+    body:json: {
+      {
+        "url": "https://docs.nestjs.com"
+      }
+    }
+  }
+  
+  response: {
+    status: {
+      code: 400
+      text: Bad Request
+    }
+  
+    body: {
+      type: text
+      content: '''
+  
+      '''
+    }
+  }
+}
+
+example {
+  name: 403 Response
+  description: Custom slug needs Pro, or the free limit is reached
+  
+  request: {
+    url: {{baseUrl}}/links
+    method: POST
+    mode: json
+    body:json: {
+      {
+        "url": "https://docs.nestjs.com"
+      }
+    }
+  }
+  
+  response: {
+    status: {
+      code: 403
+      text: Forbidden
+    }
+  
+    body: {
+      type: text
+      content: '''
+  
+      '''
+    }
+  }
+}
+
+example {
+  name: 409 Response
+  description: Slug is taken or reserved
+  
+  request: {
+    url: {{baseUrl}}/links
+    method: POST
+    mode: json
+    body:json: {
+      {
+        "url": "https://docs.nestjs.com"
+      }
+    }
+  }
+  
+  response: {
+    status: {
+      code: 409
+      text: Conflict
+    }
+  
+    body: {
+      type: text
+      content: '''
+  
+      '''
+    }
+  }
+}

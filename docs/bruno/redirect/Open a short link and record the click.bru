@@ -1,0 +1,89 @@
+meta {
+  name: Open a short link and record the click
+  type: http
+  seq: 1
+  tags: [
+    redirect
+  ]
+}
+
+get {
+  url: {{baseUrl}}/:slug
+  body: none
+  auth: inherit
+}
+
+params:path {
+  slug: {{slug}}
+}
+
+headers {
+  referer: 
+  user-agent: 
+}
+
+example {
+  name: 302 Response
+  description: Redirects to the original url
+  
+  request: {
+    url: {{baseUrl}}/:slug
+    method: GET
+    mode: none
+    params:path: {
+      slug: 
+    }
+  
+    headers: {
+      referer: 
+      user-agent: 
+    }
+  }
+  
+  response: {
+    status: {
+      code: 302
+      text: Found
+    }
+  
+    body: {
+      type: text
+      content: '''
+  
+      '''
+    }
+  }
+}
+
+example {
+  name: 404 Response
+  description: Unknown slug
+  
+  request: {
+    url: {{baseUrl}}/:slug
+    method: GET
+    mode: none
+    params:path: {
+      slug: 
+    }
+  
+    headers: {
+      referer: 
+      user-agent: 
+    }
+  }
+  
+  response: {
+    status: {
+      code: 404
+      text: Not Found
+    }
+  
+    body: {
+      type: text
+      content: '''
+  
+      '''
+    }
+  }
+}

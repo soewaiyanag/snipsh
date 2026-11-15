@@ -1,0 +1,114 @@
+meta {
+  name: Log in and get an access token
+  type: http
+  seq: 2
+  tags: [
+    auth
+  ]
+}
+
+post {
+  url: {{baseUrl}}/auth/login
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "email": "{{email}}",
+    "password": "{{password}}"
+  }
+}
+
+example {
+  name: 200 Response
+  description: Returns { accessToken }
+  
+  request: {
+    url: {{baseUrl}}/auth/login
+    method: POST
+    mode: json
+    body:json: {
+      {
+        "email": "{{email}}",
+        "password": "{{password}}"
+      }
+    }
+  }
+  
+  response: {
+    status: {
+      code: 200
+      text: OK
+    }
+  
+    body: {
+      type: text
+      content: '''
+  
+      '''
+    }
+  }
+}
+
+example {
+  name: 401 Response
+  description: Wrong email or password
+  
+  request: {
+    url: {{baseUrl}}/auth/login
+    method: POST
+    mode: json
+    body:json: {
+      {
+        "email": "{{email}}",
+        "password": "{{password}}"
+      }
+    }
+  }
+  
+  response: {
+    status: {
+      code: 401
+      text: Unauthorized
+    }
+  
+    body: {
+      type: text
+      content: '''
+  
+      '''
+    }
+  }
+}
+
+example {
+  name: 429 Response
+  description: Too many attempts
+  
+  request: {
+    url: {{baseUrl}}/auth/login
+    method: POST
+    mode: json
+    body:json: {
+      {
+        "email": "{{email}}",
+        "password": "{{password}}"
+      }
+    }
+  }
+  
+  response: {
+    status: {
+      code: 429
+      text: Too Many Requests
+    }
+  
+    body: {
+      type: text
+      content: '''
+  
+      '''
+    }
+  }
+}

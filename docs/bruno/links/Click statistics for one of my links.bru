@@ -1,0 +1,102 @@
+meta {
+  name: Click statistics for one of my links
+  type: http
+  seq: 5
+  tags: [
+    links
+  ]
+}
+
+get {
+  url: {{baseUrl}}/links/:id/stats
+  body: none
+  auth: inherit
+}
+
+params:path {
+  id: {{linkId}}
+}
+
+example {
+  name: 200 Response
+  description: { total, perDay, topReferrers }
+  
+  request: {
+    url: {{baseUrl}}/links/:id/stats
+    method: GET
+    mode: none
+    params:path: {
+      id: 
+    }
+  }
+  
+  response: {
+    status: {
+      code: 200
+      text: OK
+    }
+  
+    body: {
+      type: text
+      content: '''
+  
+      '''
+    }
+  }
+}
+
+example {
+  name: 403 Response
+  description: The link belongs to another user
+  
+  request: {
+    url: {{baseUrl}}/links/:id/stats
+    method: GET
+    mode: none
+    params:path: {
+      id: 
+    }
+  }
+  
+  response: {
+    status: {
+      code: 403
+      text: Forbidden
+    }
+  
+    body: {
+      type: text
+      content: '''
+  
+      '''
+    }
+  }
+}
+
+example {
+  name: 404 Response
+  description: Link not found
+  
+  request: {
+    url: {{baseUrl}}/links/:id/stats
+    method: GET
+    mode: none
+    params:path: {
+      id: 
+    }
+  }
+  
+  response: {
+    status: {
+      code: 404
+      text: Not Found
+    }
+  
+    body: {
+      type: text
+      content: '''
+  
+      '''
+    }
+  }
+}
