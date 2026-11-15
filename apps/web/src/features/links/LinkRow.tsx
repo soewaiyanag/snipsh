@@ -1,5 +1,6 @@
 import { Link as RouterLink } from 'react-router'
 import type { Link } from '@/api/types'
+import { Skeleton } from '@/components/ui/skeleton'
 import { formatDate, formatRelative } from '@/lib/format'
 import { SHORT_LINK_PREFIX } from '@/lib/short-link'
 import { cn } from '@/lib/utils'
@@ -44,6 +45,33 @@ export function LinkRow({ link, isNew }: { link: Link; isNew: boolean }) {
         <div className="flex items-center gap-1">
           <CopyButton slug={link.slug} />
           <DeleteLinkButton link={link} iconOnly />
+        </div>
+      </div>
+    </li>
+  )
+}
+
+// Same box as LinkRow, so the page does not jump when the links arrive.
+// The widths vary a little per row, like real slugs and URLs do.
+const SKELETON_WIDTHS = [
+  { slug: 'w-40', url: 'w-72' },
+  { slug: 'w-32', url: 'w-56' },
+  { slug: 'w-44', url: 'w-80' },
+]
+
+export function LinkRowSkeleton({ row }: { row: number }) {
+  const widths = SKELETON_WIDTHS[row % SKELETON_WIDTHS.length]
+  return (
+    <li className="grid grid-cols-[minmax(0,1fr)] gap-y-2 px-4 py-4 sm:flex sm:flex-wrap sm:items-center sm:gap-x-4">
+      <div className="min-w-0 sm:flex-1 sm:basis-64">
+        <Skeleton className={cn('h-7 max-w-full', widths.slug)} />
+        <Skeleton className={cn('mt-1.5 h-4 max-w-full', widths.url)} />
+      </div>
+      <div className="flex items-center justify-between gap-3 sm:contents">
+        <Skeleton className="h-4 w-16" />
+        <div className="flex items-center gap-1">
+          <Skeleton className="size-11 rounded-lg sm:size-9" />
+          <Skeleton className="size-11 rounded-lg sm:size-9" />
         </div>
       </div>
     </li>

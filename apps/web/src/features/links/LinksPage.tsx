@@ -2,13 +2,12 @@ import { useState } from 'react'
 import { Navigate, useSearchParams } from 'react-router'
 import type { Link } from '@/api/types'
 import { Button } from '@/components/ui/button'
-import { Skeleton } from '@/components/ui/skeleton'
 import { formatNumber } from '@/lib/format'
 import { SHORT_LINK_PREFIX } from '@/lib/short-link'
 import { cn } from '@/lib/utils'
 import { CopyButton } from './CopyButton'
 import { CreateLinkBar } from './CreateLinkBar'
-import { LinkRow } from './LinkRow'
+import { LinkRow, LinkRowSkeleton } from './LinkRow'
 import { LINKS_PAGE_SIZE, useLinks } from './queries'
 
 const FIRST_PAGE = 1
@@ -70,13 +69,9 @@ export function LinksPage() {
           )}
         </div>
         {links.isPending ? (
-          <ul aria-label="Loading links" className="px-4">
+          <ul aria-label="Loading links" className="grid gap-1">
             {Array.from({ length: SKELETON_ROWS }, (_, row) => (
-              <li key={row} className="flex items-center gap-6 py-5">
-                <Skeleton className="h-6 w-48" />
-                <Skeleton className="hidden h-4 flex-1 md:block" />
-                <Skeleton className="h-4 w-24" />
-              </li>
+              <LinkRowSkeleton key={row} row={row} />
             ))}
           </ul>
         ) : links.isError ? (
