@@ -15,7 +15,7 @@ export function Wordmark() {
           transform="rotate(-40 12 12)"
         />
       </svg>
-      SnipShort
+      snipsh
     </span>
   )
 }

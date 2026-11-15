@@ -1,6 +1,8 @@
 # snipsh
 
-A URL shortener: a NestJS API and a React web app in one repository.
+**snipsh** is a URL shortener. The name is short for **snip short**: it snips a long link down to a short one, and the name itself is snipped short too.
+
+This repository holds both halves: the NestJS API and the React web app.
 
 | App | Folder | Live |
 | --- | --- | --- |

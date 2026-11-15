@@ -1,6 +1,6 @@
-# SnipShort
+# snipsh
 
-**Long links, cut short.** SnipShort turns a long URL into a short link like `snipsh.com/aB3x9` and counts every click it gets.
+**Long links, cut short.** snipsh turns a long URL into a short link like `snipsh.com/aB3x9` and counts every click it gets.
 
 **Live:** https://snipsh-swya.vercel.app  
 **Backend API:** https://github.com/soewaiyanag/snipsh-api  
@@ -8,7 +8,7 @@
 
 Try it with the demo account: `test@gmail.com` / `hesoyam1234`
 
-![The SnipShort landing page: a dark page with the headline "Long links, cut short.", a paste bar, and a glowing blue arc like a horizon](docs/landing.png)
+![The snipsh landing page: a dark page with the headline "Long links, cut short.", a paste bar, and a glowing blue arc like a horizon](docs/landing.png)
 
 This was written with an AI assistant, Claude Opus 5.5.
 
@@ -24,7 +24,7 @@ The links and click figures below come from the sample data in the mock API, not
 
 ## The backend is the main feature
 
-A short-link service is a backend. The pages in this repo are the front door; the part that makes SnipShort work is the **[snipsh-api](https://github.com/soewaiyanag/snipsh-api)** repository:
+A short-link service is a backend. These pages are the front door; the part that makes snipsh work is the **[API](../api)** next to this app:
 
 - **Redirects.** `GET /:slug` is public and answers with a `302` to the long URL. That is the whole product: someone opens `snipsh.com/aB3x9` and lands on the page it stands for.
 - **Accounts.** Register and log in with email and password. Passwords are hashed, and requests carry a JWT.

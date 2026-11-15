@@ -16,7 +16,7 @@ const FEATURES = [
   },
   {
     title: 'Your own slugs',
-    text: `Name the link yourself, like ${shortLinkLabel('launch')}, or let SnipShort pick one.`,
+    text: `Name the link yourself, like ${shortLinkLabel('launch')}, or let snipsh pick one.`,
   },
   {
     title: 'Click counts',
@@ -49,7 +49,7 @@ export function LandingPage() {
           Long links, cut short.
         </h1>
         <p className="mt-5 max-w-xl text-lg text-pretty text-muted-foreground">
-          SnipShort turns any long URL into a short link you can share, and counts every click it
+          snipsh turns any long URL into a short link you can share, and counts every click it
           gets.
         </p>
 
