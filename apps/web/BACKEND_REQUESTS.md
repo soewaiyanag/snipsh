@@ -8,10 +8,6 @@ Things the web app still needs from the API in [`apps/api`](../api). The web app
 
 **Ask:** return `{ id, email, plan, createdAt }` from `/auth/me`. With the plan, the UI could explain the free limits (custom slugs, number of links) before the user hits a `403`.
 
-## 2. Editing a link
-
-There is no `PATCH /links/:id`, so the web app shows Edit only against the mocks.
-
 ## Noted, no action needed
 
 - Another user's link answers `403` ("belongs to another user"), which confirms the id exists. The web app shows it as "does not exist"; a `404` would reveal less.

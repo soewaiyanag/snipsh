@@ -3,7 +3,7 @@ import { beforeEach, describe, expect, it } from 'vitest'
 import { setToken } from '@/features/auth/token'
 import { DEMO_CREDENTIALS } from '@/mocks/demo'
 import { renderApp, signInAsDemo } from '@/test/render-app'
-import { SLUG_TAKEN_MESSAGE } from './LinkForm'
+import { SLUG_TAKEN_MESSAGE } from './CreateLinkBar'
 import { LINKS_PAGE_SIZE } from './queries'
 
 function findLinkList() {

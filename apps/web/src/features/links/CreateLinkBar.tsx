@@ -7,12 +7,13 @@ import type { Link } from '@/api/types'
 import { Field } from '@/components/Field'
 import { Button } from '@/components/ui/button'
 import { SHORT_LINK_PREFIX } from '@/lib/short-link'
-import { SLUG_TAKEN_MESSAGE } from './LinkForm'
 import { useCreateLink } from './queries'
 
 const URL_ERROR_ID = 'create-url-error'
 
 // The landing page's bar, doing the real thing. The slug stays out of the way until asked for.
+export const SLUG_TAKEN_MESSAGE = 'That slug is taken'
+
 export function CreateLinkBar({ onCreated }: { onCreated: (link: Link) => void }) {
   const createLink = useCreateLink()
   const [showsSlug, setShowsSlug] = useState(false)

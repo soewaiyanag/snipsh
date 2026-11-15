@@ -1,10 +1,6 @@
-import { ArrowLeftIcon, CircleCheckIcon, ClockIcon, ExternalLinkIcon, PauseCircleIcon, PencilIcon } from 'lucide-react'
-import { useState } from 'react'
+import { ArrowLeftIcon, BanIcon, CircleCheckIcon, ClockIcon, ExternalLinkIcon } from 'lucide-react'
 import { Link as RouterLink, useNavigate, useParams } from 'react-router'
-import { toast } from 'sonner'
-import { capabilities } from '@/api/capabilities'
 import { HTTP_STATUS, isApiError } from '@/api/client'
-import { updateLinkSchema } from '@/api/schemas'
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
 import { LinkStats } from '@/features/stats/LinkStats'
@@ -13,15 +9,12 @@ import { SHORT_LINK_PREFIX } from '@/lib/short-link'
 import { cn } from '@/lib/utils'
 import { CopyButton } from './CopyButton'
 import { DeleteLinkButton } from './DeleteLinkButton'
-import { LinkForm } from './LinkForm'
-import { useLink, useUpdateLink } from './queries'
+import { useLink } from './queries'
 
 export function LinkDetailsPage() {
   const { id = '' } = useParams()
   const navigate = useNavigate()
   const link = useLink(id)
-  const updateLink = useUpdateLink(id)
-  const [isEditing, setIsEditing] = useState(false)
 
   if (link.isPending) {
     return (
@@ -63,8 +56,8 @@ export function LinkDetailsPage() {
   const { data } = link
   const isExpired = data.expiresAt ? new Date(data.expiresAt) < new Date() : false
   const isLive = data.isActive !== false && !isExpired
-  const status = isExpired ? 'Expired' : data.isActive === false ? 'Paused' : 'Active'
-  const StatusIcon = isExpired ? ClockIcon : data.isActive === false ? PauseCircleIcon : CircleCheckIcon
+  const status = isExpired ? 'Expired' : data.isActive === false ? 'Disabled' : 'Active'
+  const StatusIcon = isExpired ? ClockIcon : data.isActive === false ? BanIcon : CircleCheckIcon
 
   return (
     <div className="mx-auto max-w-3xl pt-6 sm:pt-10">
@@ -88,64 +81,40 @@ export function LinkDetailsPage() {
         </div>
         <div className="flex flex-wrap items-center gap-2">
           <CopyButton slug={data.slug} variant="default" />
-          {capabilities.editLinks && (
-            <Button variant="outline" onClick={() => setIsEditing(true)} disabled={isEditing}>
-              <PencilIcon />
-              Edit
-            </Button>
-          )}
           <DeleteLinkButton link={data} onDeleted={() => navigate('/links')} />
         </div>
       </header>
 
-      {isEditing ? (
-        <section aria-label="Edit link" className="sheet mt-6 p-5">
-          <LinkForm
-            schema={updateLinkSchema}
-            defaultValues={{ url: data.url, slug: data.slug }}
-            submitLabel="Save"
-            submittingLabel="Saving…"
-            slugLabel="Slug"
-            onCancel={() => setIsEditing(false)}
-            onSubmit={async (values) => {
-              await updateLink.mutateAsync(values)
-              toast.success('Link saved')
-              setIsEditing(false)
-            }}
-          />
-        </section>
-      ) : (
-        <dl className="sheet mt-6 grid gap-x-10 gap-y-5 p-5 sm:grid-cols-2 sm:p-6">
-          <div className="min-w-0 sm:col-span-2">
-            <dt className="text-sm text-muted-foreground">Destination</dt>
-            <dd className="mt-1">
-              <a
-                href={data.url}
-                target="_blank"
-                rel="noreferrer"
-                className="link-text inline-flex items-start gap-2 rounded-sm underline hover:no-underline"
-              >
-                {data.url}
-                <ExternalLinkIcon aria-hidden className="mt-1 size-4 shrink-0" />
-                <span className="sr-only">(opens in a new tab)</span>
-              </a>
-            </dd>
-          </div>
+      <dl className="sheet mt-6 grid gap-x-10 gap-y-5 p-5 sm:grid-cols-2 sm:p-6">
+        <div className="min-w-0 sm:col-span-2">
+          <dt className="text-sm text-muted-foreground">Destination</dt>
+          <dd className="mt-1">
+            <a
+              href={data.url}
+              target="_blank"
+              rel="noreferrer"
+              className="link-text inline-flex items-start gap-2 rounded-sm underline hover:no-underline"
+            >
+              {data.url}
+              <ExternalLinkIcon aria-hidden className="mt-1 size-4 shrink-0" />
+              <span className="sr-only">(opens in a new tab)</span>
+            </a>
+          </dd>
+        </div>
+        <div>
+          <dt className="text-sm text-muted-foreground">Created</dt>
+          <dd className="mt-1">
+            {formatDate(data.createdAt)}{' '}
+            <span className="text-muted-foreground">({formatRelative(data.createdAt)})</span>
+          </dd>
+        </div>
+        {data.expiresAt && (
           <div>
-            <dt className="text-sm text-muted-foreground">Created</dt>
-            <dd className="mt-1">
-              {formatDate(data.createdAt)}{' '}
-              <span className="text-muted-foreground">({formatRelative(data.createdAt)})</span>
-            </dd>
+            <dt className="text-sm text-muted-foreground">{isExpired ? 'Expired' : 'Expires'}</dt>
+            <dd className="mt-1">{formatDate(data.expiresAt)}</dd>
           </div>
-          {data.expiresAt && (
-            <div>
-              <dt className="text-sm text-muted-foreground">{isExpired ? 'Expired' : 'Expires'}</dt>
-              <dd className="mt-1">{formatDate(data.expiresAt)}</dd>
-            </div>
-          )}
-        </dl>
-      )}
+        )}
+      </dl>
 
       <LinkStats id={data.id} />
     </div>

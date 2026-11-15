@@ -7,7 +7,6 @@ import {
   loginSchema,
   registerSchema,
   reportLinkSchema,
-  updateLinkSchema,
 } from '@/api/schemas'
 import type { ApiError, AuthToken, Link, Paginated } from '@/api/types'
 import { env } from '@/env'
@@ -158,17 +157,6 @@ export const handlers = [
     await delay()
     const { stored, error } = findOwnLink(request, params.id)
     return error ?? HttpResponse.json(stored.link)
-  }),
-
-  http.patch(api('/links/:id'), async ({ request, params }) => {
-    await delay()
-    const { stored, error } = findOwnLink(request, params.id)
-    if (error) return error
-    const body = await parseBody(request, updateLinkSchema.partial())
-    if (body.error) return body.error
-    if (body.data.slug && isSlugTaken(body.data.slug, stored.link.id)) return slugTaken()
-    Object.assign(stored.link, body.data)
-    return HttpResponse.json(stored.link)
   }),
 
   http.delete(api('/links/:id'), async ({ request, params }) => {

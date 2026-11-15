@@ -1,6 +1,5 @@
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { createLink, deleteLink, getLink, listLinks, updateLink } from '@/api/links'
-import type { UpdateLinkInput } from '@/api/schemas'
+import { createLink, deleteLink, getLink, listLinks } from '@/api/links'
 import { getLinkStats } from '@/api/stats'
 
 export const LINKS_PAGE_SIZE = 20
@@ -34,17 +33,6 @@ export function useCreateLink() {
   return useMutation({
     mutationFn: createLink,
     onSuccess: () => queryClient.invalidateQueries({ queryKey: linkKeys.lists }),
-  })
-}
-
-export function useUpdateLink(id: string) {
-  const queryClient = useQueryClient()
-  return useMutation({
-    mutationFn: (input: UpdateLinkInput) => updateLink(id, input),
-    onSuccess: (link) => {
-      queryClient.setQueryData(linkKeys.detail(id), link)
-      return queryClient.invalidateQueries({ queryKey: linkKeys.lists })
-    },
   })
 }
 

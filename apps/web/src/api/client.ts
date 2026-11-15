@@ -38,7 +38,7 @@ export function normalizeMessage(body: unknown): string {
 }
 
 type RequestOptions = {
-  method?: 'GET' | 'POST' | 'PATCH' | 'DELETE'
+  method?: 'GET' | 'POST' | 'DELETE'
   body?: unknown
   authenticated?: boolean
   // Off where a 401 means "wrong password", not "your session ended".

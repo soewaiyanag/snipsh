@@ -1,45 +1,13 @@
-import { PencilIcon } from 'lucide-react'
-import { useState } from 'react'
 import { Link as RouterLink } from 'react-router'
-import { toast } from 'sonner'
-import { capabilities } from '@/api/capabilities'
-import { updateLinkSchema } from '@/api/schemas'
 import type { Link } from '@/api/types'
-import { Button } from '@/components/ui/button'
 import { formatDate, formatRelative } from '@/lib/format'
-import { SHORT_LINK_PREFIX, shortLinkLabel } from '@/lib/short-link'
+import { SHORT_LINK_PREFIX } from '@/lib/short-link'
 import { cn } from '@/lib/utils'
 import { CopyButton } from './CopyButton'
 import { DeleteLinkButton } from './DeleteLinkButton'
-import { LinkForm } from './LinkForm'
 import { LinkStatus } from './LinkStatus'
-import { useUpdateLink } from './queries'
 
 export function LinkRow({ link, isNew }: { link: Link; isNew: boolean }) {
-  const [isEditing, setIsEditing] = useState(false)
-  const updateLink = useUpdateLink(link.id)
-  const label = shortLinkLabel(link.slug)
-
-  if (isEditing) {
-    return (
-      <li className="rounded-xl bg-card p-5">
-        <LinkForm
-          schema={updateLinkSchema}
-          defaultValues={{ url: link.url, slug: link.slug }}
-          submitLabel="Save"
-          submittingLabel="Saving…"
-          slugLabel="Slug"
-          onCancel={() => setIsEditing(false)}
-          onSubmit={async (values) => {
-            await updateLink.mutateAsync(values)
-            toast.success('Link saved')
-            setIsEditing(false)
-          }}
-        />
-      </li>
-    )
-  }
-
   return (
     <li
       className={cn(
@@ -75,17 +43,6 @@ export function LinkRow({ link, isNew }: { link: Link; isNew: boolean }) {
         </p>
         <div className="flex items-center gap-1">
           <CopyButton slug={link.slug} />
-          {capabilities.editLinks && (
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => setIsEditing(true)}
-              aria-label={`Edit ${label}`}
-              title="Edit"
-            >
-              <PencilIcon />
-            </Button>
-          )}
           <DeleteLinkButton link={link} iconOnly />
         </div>
       </div>

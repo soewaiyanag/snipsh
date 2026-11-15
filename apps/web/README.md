@@ -16,7 +16,7 @@ This was written with an AI assistant, Claude Opus 5.5.
 
 The links and click figures below come from the sample data in the mock API, not from real traffic.
 
-![The links page: a paste bar to shorten a URL, then a list of short links with Copy, edit and delete actions](docs/links.png)
+![The links page: a paste bar to shorten a URL, then a list of short links with copy and delete actions](docs/links.png)
 
 ![A link's details page: its destination, three click figures, a clicks-per-day chart and a table of where clicks came from](docs/link-details.png)
 
@@ -37,12 +37,12 @@ A short-link service is a backend. These pages are the front door; the part that
 
 The frontend never handles the redirect; the API does. See the [API repository](https://github.com/soewaiyanag/snipsh-api) for its endpoints, data model and how to run it.
 
-> **Status.** The API is deployed at https://snipsh-api.onrender.com, but only part of it is finished. The live demo does not use it yet: it runs on a **mock API in the browser** (MSW) that follows the same contract, so every screen works today. Links and accounts you create there reset when the page reloads. Click statistics and editing a link's address are drawn here from mock data and are not in the API yet.
+> **Status.** The web app talks to the real API at https://snipsh-api.onrender.com. Set `VITE_USE_MOCKS=true` to run it against a **mock API in the browser** (MSW) instead, which follows the same contract and needs no backend.
 
 ## What the frontend does
 
 - **Make a link in one step.** Paste a URL and press Shorten, or choose your own slug. The new short link appears at once with a Copy button.
-- **Manage your links.** A paginated list with copy, inline edit and delete (asking first).
+- **Manage your links.** A paginated list with copy and delete (asking first).
 - **See the clicks.** Each link has a page with total clicks, a clicks-per-day chart, and a top-referrers table.
 - **Try it without an account.** The landing page previews a short link in the browser, and the demo account is one click away.
 - **Dark and light.** Dark is the designed look; the theme follows your system setting.
@@ -110,7 +110,7 @@ src/
   components/   shared UI; shadcn/ui components are in components/ui
   features/
     auth/       login, register, auth context, route guard, token storage
-    links/      create, list, edit, delete, link details
+    links/      create, list, delete, link details
     stats/      clicks chart and referrers table
   lib/          formatting and short-link helpers
   mocks/        MSW handlers and the in-memory data

@@ -65,7 +65,6 @@ Base URL: `VITE_API_URL`. JSON in and out. There is no `/api` prefix.
 | GET | `/links?page=1&limit=20` | | `200` `Paginated<Link>` | `401` |
 | POST | `/links` | `{ url, slug? }` | `201` `Link` | `400`, `401`, `409` slug taken |
 | GET | `/links/:id` | | `200` `Link` | `401`, `404` |
-| PATCH | `/links/:id` | `{ url?, slug? }` | not in the API by design; mocks only | |
 | POST | `/links/report` | `{ slug, reason }`, no token | `202` no body | `400`, `404`, `429` |
 | DELETE | `/links/:id` | | `204` no body | `401`, `404` |
 | GET | `/links/:id/stats` | | `200` `LinkStats` | `401`, `404` |
@@ -114,8 +113,8 @@ type ApiError = { statusCode: number; message: string | string[]; error?: string
 | `/` | public | Landing page: what snipsh does, a "Get started" button, a demo of a short link |
 | `/register` | public | Email + password. On success, log in automatically and go to `/links` |
 | `/login` | public | Email + password. Returns to the page the user was sent from |
-| `/links` | auth | Create form at the top (URL + optional custom slug). Paginated list below: short link with a copy button, target URL (truncated), created date, and edit/delete actions |
-| `/links/:id` | auth | Link details, edit, delete, and stats: total clicks, a clicks-per-day chart, a top referrers table |
+| `/links` | auth | Create form at the top (URL + optional custom slug). Paginated list below: short link with a copy button, target URL (truncated), created date, and copy/delete actions |
+| `/links/:id` | auth | Link details, delete, and stats: total clicks, a clicks-per-day chart, a top referrers table |
 | `*` | public | 404 page |
 
 Logged-in users get a header with their email and a logout button. Logging out clears the token and the TanStack Query cache.
@@ -127,7 +126,7 @@ Logged-in users get a header with their email and a logout button. Logging out c
 - Every data view has **loading, empty and error** states. An empty list shows a call to action, not a blank area.
 - Copy a short link in one click, with "Copied" feedback (a toast).
 - Ask for confirmation before deleting a link.
-- Use optimistic updates or invalidate the query after create, edit and delete, so the list is never stale.
+- Use optimistic updates or invalidate the query after create and delete, so the list is never stale.
 - Field errors appear under the field. A `409` on slug appears under the slug field ("That slug is taken").
 - Mobile-first and responsive from 360px up. Dark mode follows the system setting.
 - Accessibility: real `<label>`s, visible focus rings, keyboard-usable dialogs (shadcn/Radix covers this), color contrast AA.
@@ -154,7 +153,7 @@ Do these one at a time, and commit after each:
 1. Tooling: Tailwind v4, shadcn/ui init, React Router, TanStack Query, `src/env.ts`, `.env.example`, path alias `@/`.
 2. `src/api/client.ts` + types + MSW setup, with handlers for every endpoint above (an in-memory store, seeded with one user `demo@snipsh.com` / `password123` and a few links with stats).
 3. Auth: register, login, logout, protected routes, 401 handling.
-4. Links: list with pagination, create, copy, edit, delete.
+4. Links: list with pagination, create, copy, delete.
 5. Link details + stats chart.
 6. Landing page, 404, polish (empty states, responsive, dark mode).
 7. Tests: the `client.ts` error normalization, the auth redirect, and the create-link form (including a 409).

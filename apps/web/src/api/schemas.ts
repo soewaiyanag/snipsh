@@ -64,11 +64,6 @@ export const createLinkFormSchema = z.object({
 // What the API accepts: the slug may also be left out.
 export const createLinkSchema = createLinkFormSchema.partial({ slug: true })
 
-export const updateLinkSchema = z.object({
-  url: urlSchema,
-  slug: z.string().trim().refine(isSlug, SLUG_MESSAGE),
-})
-
 const REPORT_REASON_MAX_LENGTH = 500
 
 // Accepts the slug or the whole short link a visitor copied, and keeps only the slug.
@@ -96,4 +91,3 @@ export type ReportLinkForm = z.input<typeof reportLinkSchema>
 export type ReportLinkInput = z.output<typeof reportLinkSchema>
 export type DeleteAccountInput = z.infer<typeof deleteAccountSchema>
 export type CreateLinkInput = z.infer<typeof createLinkSchema>
-export type UpdateLinkInput = z.infer<typeof updateLinkSchema>
