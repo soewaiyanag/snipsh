@@ -147,17 +147,7 @@ export function LinkDetailsPage() {
         </dl>
       )}
 
-      {capabilities.stats ? (
-        <LinkStats id={data.id} />
-      ) : (
-        <section className="mt-12 rounded-xl bg-card p-6">
-          <h2 className="text-xl font-semibold tracking-tight">Click statistics are coming</h2>
-          <p className="mt-2 max-w-prose text-muted-foreground">
-            The API does not count clicks yet. When it does, the total, the clicks per day and where
-            they came from will appear here.
-          </p>
-        </section>
-      )}
+      <LinkStats id={data.id} />
     </div>
   )
 }

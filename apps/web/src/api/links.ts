@@ -1,12 +1,10 @@
 import { request } from './client'
-import type { CreateLinkInput, UpdateLinkInput } from './schemas'
+import type { CreateLinkInput, ReportLinkInput, UpdateLinkInput } from './schemas'
 import type { Link, Paginated } from './types'
 
-// The API returns every link, newest first. Pages are cut here so nothing else needs to know.
-export async function listLinks({ page, limit }: { page: number; limit: number }): Promise<Paginated<Link>> {
-  const links = await request<Link[]>('/links')
-  const start = (page - 1) * limit
-  return { items: links.slice(start, start + limit), total: links.length, page, limit }
+export function listLinks({ page, limit }: { page: number; limit: number }) {
+  const query = new URLSearchParams({ page: String(page), limit: String(limit) })
+  return request<Paginated<Link>>(`/links?${query}`)
 }
 
 export function createLink(input: CreateLinkInput) {
@@ -23,4 +21,9 @@ export function updateLink(id: string, input: Partial<UpdateLinkInput>) {
 
 export function deleteLink(id: string) {
   return request<void>(`/links/${encodeURIComponent(id)}`, { method: 'DELETE' })
+}
+
+// Public: anyone who meets a harmful short link can flag it for review.
+export function reportLink(input: ReportLinkInput) {
+  return request<void>('/links/report', { method: 'POST', body: input, authenticated: false })
 }

@@ -8,11 +8,13 @@ export const HTTP_STATUS = {
   forbidden: 403,
   notFound: 404,
   conflict: 409,
+  tooManyRequests: 429,
 } as const
 
 const NETWORK_ERROR_STATUS = 0
 const FALLBACK_MESSAGE = 'Something went wrong. Please try again.'
 const NETWORK_MESSAGE = 'Could not reach the server. Check your connection and try again.'
+const TOO_MANY_REQUESTS_MESSAGE = 'Too many attempts. Wait a minute and try again.'
 
 export class ApiRequestError extends Error {
   readonly status: number
@@ -39,11 +41,13 @@ type RequestOptions = {
   method?: 'GET' | 'POST' | 'PATCH' | 'DELETE'
   body?: unknown
   authenticated?: boolean
+  // Off where a 401 means "wrong password", not "your session ended".
+  signOutOnUnauthorized?: boolean
 }
 
 export async function request<T>(
   path: string,
-  { method = 'GET', body, authenticated = true }: RequestOptions = {},
+  { method = 'GET', body, authenticated = true, signOutOnUnauthorized = true }: RequestOptions = {},
 ): Promise<T> {
   const token = authenticated ? getToken() : null
   const headers = new Headers()
@@ -62,13 +66,21 @@ export async function request<T>(
   }
 
   // Clearing the token flips the auth state, and the route guard sends the user to /login.
-  if (authenticated && response.status === HTTP_STATUS.unauthorized) clearToken()
+  if (authenticated && signOutOnUnauthorized && response.status === HTTP_STATUS.unauthorized) {
+    clearToken()
+  }
 
   if (!response.ok) {
     const errorBody: unknown = await response.json().catch(() => null)
-    throw new ApiRequestError(response.status, normalizeMessage(errorBody))
+    // The rate limiter's own message ("ThrottlerException: ...") is not meant for people.
+    const message =
+      response.status === HTTP_STATUS.tooManyRequests
+        ? TOO_MANY_REQUESTS_MESSAGE
+        : normalizeMessage(errorBody)
+    throw new ApiRequestError(response.status, message)
   }
 
-  if (response.status === HTTP_STATUS.noContent) return undefined as T
-  return (await response.json()) as T
+  // 204, and 202 from a report, come with no body at all.
+  const text = await response.text()
+  return (text ? JSON.parse(text) : undefined) as T
 }

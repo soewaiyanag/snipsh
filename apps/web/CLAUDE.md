@@ -1,8 +1,8 @@
-# CLAUDE.md: SnipShort web app
+# CLAUDE.md: snipsh web app
 
-You are building the frontend for **SnipShort**, a URL shortener at snipsh.com. Users sign up, turn long URLs into short links like `snipsh.com/aB3x9`, and see how often each link gets clicked.
+You are building the frontend for **snipsh**, a URL shortener (the name is short for "snip short"). Users sign up, turn long URLs into short links like `snipsh-api.onrender.com/aB3x9`, and see how often each link gets clicked.
 
-The backend is a separate NestJS API (repo `snip-api`) that the owner is building by hand while learning NestJS. **You own this frontend completely.** Never edit the backend. If the frontend needs something from the API that isn't in the contract below, write it down in `BACKEND_REQUESTS.md` instead of working around it.
+The backend is the NestJS API in `apps/api` of this monorepo, which the owner is building by hand while learning NestJS. **You own this frontend completely.** Never edit the backend. If the frontend needs something from the API that isn't in the contract below, write it down in `BACKEND_REQUESTS.md` instead of working around it.
 
 ---
 
@@ -30,7 +30,7 @@ Use the latest stable version of each package. Add no other dependencies without
 
 ```bash
 VITE_API_URL=http://localhost:3000     # the NestJS API
-VITE_SHORT_DOMAIN=http://localhost:3000 # base for short links; https://snipsh.com in production
+VITE_SHORT_DOMAIN=http://localhost:3000 # base for short links; https://snipsh-api.onrender.com in production
 VITE_USE_MOCKS=true                     # true = MSW fakes the API in the browser
 ```
 
@@ -51,7 +51,7 @@ VITE_USE_MOCKS=true                     # true = MSW fakes the API in the browse
 
 ---
 
-## API contract (planned)
+## API contract
 
 Base URL: `VITE_API_URL`. JSON in and out. There is no `/api` prefix.
 
@@ -60,14 +60,16 @@ Base URL: `VITE_API_URL`. JSON in and out. There is no `/api` prefix.
 | Method | Path | Body | Success | Errors |
 |---|---|---|---|---|
 | POST | `/auth/register` | `{ email, password }` | `201` `User` | `400` validation, `409` email taken |
-| POST | `/auth/login` | `{ email, password }` | `200` `{ accessToken: string }` | `401` wrong email or password |
+| POST | `/auth/login` | `{ email, password }` | `200` `{ accessToken: string }` | `401` wrong email or password, `429` |
+| DELETE | `/auth/me` | `{ password }` | `204` no body, deletes links and clicks too | `401` wrong password, `429` |
 | GET | `/links?page=1&limit=20` | | `200` `Paginated<Link>` | `401` |
 | POST | `/links` | `{ url, slug? }` | `201` `Link` | `400`, `401`, `409` slug taken |
 | GET | `/links/:id` | | `200` `Link` | `401`, `404` |
-| PATCH | `/links/:id` | `{ url?, slug? }` | `200` `Link` | `400`, `401`, `404`, `409` |
+| PATCH | `/links/:id` | `{ url?, slug? }` | not in the API by design; mocks only | |
+| POST | `/links/report` | `{ slug, reason }`, no token | `202` no body | `400`, `404`, `429` |
 | DELETE | `/links/:id` | | `204` no body | `401`, `404` |
 | GET | `/links/:id/stats` | | `200` `LinkStats` | `401`, `404` |
-| GET | `/:slug` | | `302` redirect (not called by the app) | `404` |
+| GET | `/:slug` | | `302` redirect (not called by the app) | `404`, `410` disabled |
 
 Users only ever see and change **their own** links. Another user's link returns `404`.
 
@@ -79,7 +81,7 @@ type Link = {
   slug: string;          // 3-32 chars, letters, digits, "-" and "_"
   url: string;           // http or https only
   createdAt: string;     // ISO 8601
-  isActive?: boolean;    // planned, may be missing at first
+  isActive?: boolean;    // false = switched off after a report; the redirect answers 410
   expiresAt?: string | null; // planned, may be missing at first
 };
 
@@ -98,7 +100,7 @@ type ApiError = { statusCode: number; message: string | string[]; error?: string
 **Validation rules** (mirror them in the Zod form schemas, but always show the server's message when it sends one):
 - `email`: a valid email.
 - `password`: 8 to 72 characters.
-- `url`: a valid `http://` or `https://` URL, up to 2048 characters, and not a snipsh.com link.
+- `url`: a valid `http://` or `https://` URL, up to 2048 characters, and not a link to the API's own host.
 - `slug` (optional): 3 to 32 characters, `^[A-Za-z0-9_-]+$`. If it's empty, the server generates one.
 
 `message` can be a string or an array of strings (class-validator returns an array). Normalize it once in `client.ts`.
@@ -109,7 +111,7 @@ type ApiError = { statusCode: number; message: string | string[]; error?: string
 
 | Route | Access | What it does |
 |---|---|---|
-| `/` | public | Landing page: what SnipShort does, a "Get started" button, a demo of a short link |
+| `/` | public | Landing page: what snipsh does, a "Get started" button, a demo of a short link |
 | `/register` | public | Email + password. On success, log in automatically and go to `/links` |
 | `/login` | public | Email + password. Returns to the page the user was sent from |
 | `/links` | auth | Create form at the top (URL + optional custom slug). Paginated list below: short link with a copy button, target URL (truncated), created date, and edit/delete actions |

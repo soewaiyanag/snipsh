@@ -1,13 +1,24 @@
 import { delay, http, HttpResponse } from 'msw'
 import type { z } from 'zod'
 import { HTTP_STATUS } from '@/api/client'
-import { createLinkSchema, loginSchema, registerSchema, updateLinkSchema } from '@/api/schemas'
-import type { ApiError, AuthToken, Link } from '@/api/types'
+import {
+  createLinkSchema,
+  deleteAccountSchema,
+  loginSchema,
+  registerSchema,
+  reportLinkSchema,
+  updateLinkSchema,
+} from '@/api/schemas'
+import type { ApiError, AuthToken, Link, Paginated } from '@/api/types'
 import { env } from '@/env'
 import { randomSlug } from '@/lib/short-link'
 import { db, EMPTY_STATS } from './db'
 
-const STATUS = { ...HTTP_STATUS, created: 201, found: 302, badRequest: 400 } as const
+const STATUS = { ...HTTP_STATUS, created: 201, accepted: 202, found: 302, badRequest: 400, gone: 410 } as const
+
+// Same defaults as the API's PaginationQueryDto.
+const DEFAULT_PAGE = 1
+const DEFAULT_LIMIT = 20
 
 const api = (path: string) => `${env.apiUrl}${path}`
 
@@ -82,14 +93,47 @@ export const handlers = [
     return HttpResponse.json({ accessToken: tokenFor(found.user.id) } satisfies AuthToken)
   }),
 
+  http.delete(api('/auth/me'), async ({ request }) => {
+    await delay()
+    const user = authenticate(request)
+    if (!user) return unauthorized()
+    const { data, error } = await parseBody(request, deleteAccountSchema)
+    if (error) return error
+    const stored = db.users.find((entry) => entry.user.id === user.id)
+    if (!stored || stored.password !== data.password) {
+      return errorResponse(STATUS.unauthorized, 'Wrong password', 'Unauthorized')
+    }
+    // Like the database cascade: the user's links and their stats go too.
+    for (const { link } of db.links.filter(({ userId }) => userId === user.id)) db.stats.delete(link.id)
+    db.links = db.links.filter(({ userId }) => userId !== user.id)
+    db.users.splice(db.users.indexOf(stored), 1)
+    return new HttpResponse(null, { status: STATUS.noContent })
+  }),
+
   http.get(api('/links'), async ({ request }) => {
     await delay()
     const user = authenticate(request)
     if (!user) return unauthorized()
-    // Like the real API: every link of the user, newest first, no paging.
-    return HttpResponse.json(
-      db.links.filter(({ userId }) => userId === user.id).map(({ link }) => link) satisfies Link[],
-    )
+    const params = new URL(request.url).searchParams
+    const page = Number(params.get('page') ?? DEFAULT_PAGE)
+    const limit = Number(params.get('limit') ?? DEFAULT_LIMIT)
+    const links = db.links.filter(({ userId }) => userId === user.id).map(({ link }) => link)
+    const start = (page - 1) * limit
+    return HttpResponse.json({
+      items: links.slice(start, start + limit),
+      total: links.length,
+      page,
+      limit,
+    } satisfies Paginated<Link>)
+  }),
+
+  // Public, like the API. Before /links/:id so "report" is never read as an id.
+  http.post(api('/links/report'), async ({ request }) => {
+    await delay()
+    const { data, error } = await parseBody(request, reportLinkSchema)
+    if (error) return error
+    if (!db.links.some(({ link }) => link.slug === data.slug)) return linkNotFound()
+    return new HttpResponse(null, { status: STATUS.accepted })
   }),
 
   http.post(api('/links'), async ({ request }) => {
@@ -104,6 +148,7 @@ export const handlers = [
       slug: data.slug || generateSlug(),
       url: data.url,
       createdAt: new Date().toISOString(),
+      isActive: true,
     }
     db.links.unshift({ userId: user.id, link })
     return HttpResponse.json(link, { status: STATUS.created })
@@ -145,6 +190,9 @@ export const handlers = [
   http.get(api('/:slug'), ({ params }) => {
     const stored = db.links.find(({ link }) => link.slug === params.slug)
     if (!stored) return errorResponse(STATUS.notFound, 'Short link not found', 'Not Found')
+    if (stored.link.isActive === false) {
+      return errorResponse(STATUS.gone, 'This link has been disabled', 'Gone')
+    }
     return new HttpResponse(null, { status: STATUS.found, headers: { Location: stored.link.url } })
   }),
 ]

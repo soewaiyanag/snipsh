@@ -1,9 +1,11 @@
 import { beforeEach, describe, expect, it } from 'vitest'
-import { login, register } from '@/api/auth'
+import { deleteAccount, login, register } from '@/api/auth'
 import { HTTP_STATUS } from '@/api/client'
-import { createLink, deleteLink, getLink, listLinks, updateLink } from '@/api/links'
+import { createLink, deleteLink, getLink, listLinks, reportLink, updateLink } from '@/api/links'
+import { reportLinkSchema } from '@/api/schemas'
 import { getLinkStats } from '@/api/stats'
-import { setToken } from '@/features/auth/token'
+import { getToken, setToken } from '@/features/auth/token'
+import { shortLinkUrl } from '@/lib/short-link'
 
 const DEMO = { email: 'test@gmail.com', password: 'hesoyam1234' }
 const PAGE_SIZE = 20
@@ -69,5 +71,28 @@ describe('mock API contract', () => {
     await expect(getLink('link-1')).rejects.toMatchObject({ status: HTTP_STATUS.forbidden })
     await expect(getLink('nope')).rejects.toMatchObject({ status: HTTP_STATUS.notFound })
     expect((await listLinks({ page: 1, limit: PAGE_SIZE })).total).toBe(0)
+  })
+
+  it('accepts a report by full short link or slug, and 404s an unknown one', async () => {
+    const { slug } = await createLink({ url: 'https://example.com/scam' })
+    const input = reportLinkSchema.parse({ slug: shortLinkUrl(slug), reason: 'phishing' })
+    expect(input.slug).toBe(slug)
+    await expect(reportLink(input)).resolves.toBeUndefined()
+    await expect(reportLink({ slug: 'no-such-link', reason: 'spam' })).rejects.toMatchObject({
+      status: HTTP_STATUS.notFound,
+    })
+  })
+
+  it('keeps the session on a wrong password, and deletes the account on the right one', async () => {
+    const leaving = { email: 'leaving@example.com', password: 'password123' }
+    await register(leaving)
+    await loginAs(leaving)
+    await expect(deleteAccount({ password: 'wrong-password' })).rejects.toMatchObject({
+      status: HTTP_STATUS.unauthorized,
+    })
+    expect(getToken()).not.toBeNull()
+
+    await deleteAccount({ password: leaving.password })
+    await expect(login(leaving)).rejects.toMatchObject({ status: HTTP_STATUS.unauthorized })
   })
 })

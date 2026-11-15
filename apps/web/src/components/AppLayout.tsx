@@ -28,19 +28,25 @@ function Header() {
 
   return (
     <header className="flex h-16 items-center justify-between gap-4">
-      <Link to={isAuthenticated ? '/links' : '/'} aria-label="SnipShort home" className="rounded-lg">
+      <Link to={isAuthenticated ? '/links' : '/'} aria-label="snipsh home" className="rounded-lg">
         <Wordmark />
       </Link>
       {isAuthenticated ? (
         <div className="flex min-w-0 items-center gap-3">
-          <span className="truncate text-sm text-muted-foreground">{email}</span>
+          <Link
+            to="/account"
+            title="Account settings"
+            className="truncate rounded-md text-sm text-muted-foreground hover:text-foreground"
+          >
+            {email}
+          </Link>
           <AlertDialog>
             <AlertDialogTrigger asChild>
               <Button variant="outline">Log out</Button>
             </AlertDialogTrigger>
             <AlertDialogContent>
               <AlertDialogHeader>
-                <AlertDialogTitle>Log out of SnipShort?</AlertDialogTitle>
+                <AlertDialogTitle>Log out of snipsh?</AlertDialogTitle>
                 <AlertDialogDescription>
                   You will need to log in again to see your links.
                 </AlertDialogDescription>
@@ -79,6 +85,12 @@ export function AppLayout() {
       <main id="main" className="flex-1 pb-16">
         <Outlet />
       </main>
+      <footer className="flex flex-wrap items-center justify-between gap-2 border-t py-6 text-sm text-muted-foreground">
+        <span>snipsh: short for snip short</span>
+        <Link to="/report" className="rounded-md hover:text-foreground">
+          Report a harmful link
+        </Link>
+      </footer>
       <Toaster position="bottom-center" />
     </div>
   )

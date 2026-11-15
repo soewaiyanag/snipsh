@@ -1,5 +1,5 @@
 import { request } from './client'
-import type { Credentials } from './schemas'
+import type { Credentials, DeleteAccountInput } from './schemas'
 import type { AuthToken, User } from './types'
 
 export function register(credentials: Credentials) {
@@ -16,4 +16,9 @@ export function login(credentials: Credentials) {
     body: credentials,
     authenticated: false,
   })
+}
+
+// Deletes the account with all its links and clicks. The password is asked again on purpose.
+export function deleteAccount(input: DeleteAccountInput) {
+  return request<void>('/auth/me', { method: 'DELETE', body: input, signOutOnUnauthorized: false })
 }

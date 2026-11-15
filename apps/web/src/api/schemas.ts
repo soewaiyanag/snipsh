@@ -8,7 +8,7 @@ const SLUG_MIN_LENGTH = 3
 const SLUG_MAX_LENGTH = 32
 const SLUG_PATTERN = /^[A-Za-z0-9_-]+$/
 const SLUG_MESSAGE = `Use ${SLUG_MIN_LENGTH} to ${SLUG_MAX_LENGTH} letters, digits, "-" or "_"`
-const PRODUCTION_HOST = 'snipsh.com'
+const PRODUCTION_HOST = 'snipsh-api.onrender.com'
 
 const email = z.email('Enter a valid email address')
 
@@ -69,6 +69,31 @@ export const updateLinkSchema = z.object({
   slug: z.string().trim().refine(isSlug, SLUG_MESSAGE),
 })
 
+const REPORT_REASON_MAX_LENGTH = 500
+
+// Accepts the slug or the whole short link a visitor copied, and keeps only the slug.
+function toSlug(value: string) {
+  const trimmed = value.trim()
+  if (!URL.canParse(trimmed)) return trimmed
+  return new URL(trimmed).pathname.replace(/^\/+|\/+$/g, '')
+}
+
+export const reportLinkSchema = z.object({
+  slug: z.string().transform(toSlug).refine(isSlug, 'Enter the short link or its last part, like aB3x9'),
+  reason: z
+    .string()
+    .trim()
+    .min(1, 'Tell us what is wrong with the link')
+    .max(REPORT_REASON_MAX_LENGTH, `Keep it under ${REPORT_REASON_MAX_LENGTH} characters`),
+})
+
+export const deleteAccountSchema = z.object({
+  password: z.string().min(1, 'Enter your password'),
+})
+
 export type Credentials = z.infer<typeof registerSchema>
+export type ReportLinkForm = z.input<typeof reportLinkSchema>
+export type ReportLinkInput = z.output<typeof reportLinkSchema>
+export type DeleteAccountInput = z.infer<typeof deleteAccountSchema>
 export type CreateLinkInput = z.infer<typeof createLinkSchema>
 export type UpdateLinkInput = z.infer<typeof updateLinkSchema>
