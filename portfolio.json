@@ -9,5 +9,10 @@
     "backend": ["NestJS", "Prisma", "PostgreSQL"]
   },
   "github": "https://github.com/soewaiyanag/snipsh",
-  "demo": "https://snipsh-swya.vercel.app"
+  "demo": "https://snipsh-swya.vercel.app",
+  "screenshots": [
+    "https://raw.githubusercontent.com/soewaiyanag/snipsh/main/apps/web/docs/landing.png",
+    "https://raw.githubusercontent.com/soewaiyanag/snipsh/main/apps/web/docs/links.png",
+    "https://raw.githubusercontent.com/soewaiyanag/snipsh/main/apps/web/docs/link-details.png"
+  ]
 }

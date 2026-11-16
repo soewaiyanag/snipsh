@@ -1,6 +1,6 @@
 # snipsh
 
-**Long links, cut short.** snipsh turns a long URL into a short link like `snipsh.com/aB3x9` and counts every click it gets.
+**Long links, cut short.** snipsh turns a long URL into a short link like `snipsh-api.onrender.com/aB3x9` and counts every click it gets.
 
 **Live:** https://snipsh-swya.vercel.app  
 **Backend API:** [`apps/api`](../api)  
@@ -18,7 +18,7 @@ The links and click figures below come from the sample data in the mock API, not
 
 ![The links page: a paste bar to shorten a URL, then a list of short links with copy and delete actions](docs/links.png)
 
-![A link's details page: its destination, three click figures, a clicks-per-day chart and a table of where clicks came from](docs/link-details.png)
+![A link's details page: its destination, three click figures and a clicks-per-day chart](docs/link-details.png)
 
 <img src="docs/link-details-mobile.png" alt="The link details page on a phone, 390px wide" width="320">
 
@@ -26,13 +26,13 @@ The links and click figures below come from the sample data in the mock API, not
 
 A short-link service is a backend. These pages are the front door; the part that makes snipsh work is the **[API](../api)** next to this app:
 
-- **Redirects.** `GET /:slug` is public and answers with a `302` to the long URL. That is the whole product: someone opens `snipsh.com/aB3x9` and lands on the page it stands for.
+- **Redirects.** `GET /:slug` is public and answers with a `302` to the long URL. That is the whole product: someone opens `snipsh-api.onrender.com/aB3x9` and lands on the page it stands for.
 - **Accounts.** Register and log in with email and password. Passwords are hashed, and requests carry a JWT.
 - **Links.** Create a link with a random or a custom slug, and read or delete your own. A link belongs to one user, and anyone else gets a `404`. Slugs that would clash with real routes, such as `links` or `auth`, are rejected.
 - **Built with** NestJS, Prisma and PostgreSQL.
 
 ```
- browser ──▶ snipsh.com/aB3x9 ──▶ API looks up the slug ──▶ 302 ──▶ the long URL
+ browser ──▶ snipsh-api.onrender.com/aB3x9 ──▶ API looks up the slug ──▶ 302 ──▶ the long URL
 ```
 
 The frontend never handles the redirect; the API does. See the [API](../api) for its endpoints, data model and how to run it.
@@ -45,6 +45,7 @@ The frontend never handles the redirect; the API does. See the [API](../api) for
 - **Manage your links.** A paginated list with copy and delete (asking first).
 - **See the clicks.** Each link has a page with total clicks, a clicks-per-day chart, and a top-referrers table.
 - **Try it without an account.** The landing page previews a short link in the browser, and the demo account is one click away.
+- **A landing page that shows the idea.** Scrolling cuts a long URL down to its short link, a click line draws itself, and the status codes the API sends slide past in a pinned track. People who ask for less motion get the same content, still.
 - **Dark and light.** Dark is the designed look; the theme follows your system setting.
 - **Works on a phone**, from 360px wide, with real labels, visible focus rings and keyboard-usable dialogs.
 
@@ -80,7 +81,7 @@ Open http://localhost:5173 and log in with the demo account above.
 | Variable | Example | Purpose |
 |---|---|---|
 | `VITE_API_URL` | `http://localhost:3000` | Base URL of the API. |
-| `VITE_SHORT_DOMAIN` | `https://snipsh.com` | Base of every short link shown in the app. Set it to `http://localhost:3000` to test redirects against a local API. |
+| `VITE_SHORT_DOMAIN` | `https://snipsh-api.onrender.com` | Base of every short link shown in the app. Set it to `http://localhost:3000` to test redirects against a local API. |
 | `VITE_USE_MOCKS` | `true` | `true` answers API calls in the browser with MSW. `false` calls the real API. |
 
 They are read and validated once, in `src/env.ts`. `.env` is not committed; `.env.example` is.
