@@ -7,25 +7,16 @@ import { env } from '@/env'
 import { useAuth } from '@/features/auth/auth-context'
 import { randomSlug, shortLinkLabel } from '@/lib/short-link'
 
-type Preview = { slug: string } | { error: string }
+import { ClickLine } from './landing/ClickLine'
+import { useSmoothScroll } from './landing/motion'
+import { StatusCodes } from './landing/StatusCodes'
+import { TheCut } from './landing/TheCut'
 
-const FEATURES = [
-  {
-    title: 'Short links',
-    text: 'Paste a URL of any length and get a link that is a few characters long.',
-  },
-  {
-    title: 'Your own slugs',
-    text: `Name the link yourself, like ${shortLinkLabel('launch')}, or let snipsh pick one.`,
-  },
-  {
-    title: 'Click counts',
-    text: 'See total clicks, clicks per day and where they came from, for every link.',
-  },
-]
+type Preview = { slug: string } | { error: string }
 
 export function LandingPage() {
   const { isAuthenticated } = useAuth()
+  useSmoothScroll()
   const [url, setUrl] = useState('')
   const [preview, setPreview] = useState<Preview | null>(null)
 
@@ -105,22 +96,12 @@ export function LandingPage() {
         )}
       </section>
 
-      <section aria-labelledby="what-it-does" className="mt-16 sm:mt-24">
-        <h2 id="what-it-does" className="text-2xl font-semibold tracking-tight sm:text-3xl">
-          What it does
-        </h2>
-        <dl className="mt-8 grid gap-x-10 sm:grid-cols-3">
-          {FEATURES.map(({ title, text }) => (
-            <div key={title} className="border-t py-6">
-              <dt className="font-semibold">{title}</dt>
-              <dd className="mt-2 max-w-[38ch] text-muted-foreground">{text}</dd>
-            </div>
-          ))}
-        </dl>
-      </section>
+      <TheCut />
+      <ClickLine />
+      <StatusCodes />
 
-      <section className="mt-20 flex flex-col items-start gap-6 border-t pt-12 sm:flex-row sm:items-center sm:justify-between">
-        <p className="text-2xl font-semibold tracking-tight text-balance sm:text-3xl">
+      <section className="mt-28 flex flex-col items-start gap-6 border-t pt-12 sm:mt-40 sm:flex-row sm:items-center sm:justify-between">
+        <p className="text-3xl font-semibold tracking-tight text-balance sm:text-5xl">
           Make your first short link.
         </p>
         <Button asChild size="lg">
