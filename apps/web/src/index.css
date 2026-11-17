@@ -43,11 +43,20 @@
   --shadow-field-invalid: 0 0 0 1px var(--destructive);
   /* The landing horizon: light above the arc's edge and a little just inside it. */
   --shadow-horizon: 0 -22px 60px -6px var(--primary), inset 0 26px 70px -20px var(--primary);
+  /* The same light, stronger and wider, for when the arc has climbed. */
+  --shadow-horizon-bright: 0 -40px 120px 4px var(--primary), inset 0 40px 110px -16px var(--primary);
 
+  /* The horizon's light swells and settles, slowly, like breathing. */
+  --animate-glow: glow 7s ease-in-out infinite alternate;
   /* Landing page reveals: rows wipe in from the left, the click line draws itself. */
   --animate-wipe: wipe 0.7s cubic-bezier(0.16, 1, 0.3, 1) both;
   --animate-draw-line: draw-line 2.4s cubic-bezier(0.16, 1, 0.3, 1) both;
 
+  @keyframes glow {
+    from { opacity: 0; }
+    /* Short of full strength, so the arc's edge line stays crisp at the brightest point. */
+    to { opacity: 0.65; }
+  }
   @keyframes wipe {
     from { clip-path: inset(-2rem 100% -2rem -2rem); }
     to { clip-path: inset(-2rem); }

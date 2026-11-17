@@ -36,12 +36,15 @@ export function useMediaQuery(query: string) {
   return matches
 }
 
+// Share of the remaining distance covered each frame. Lenis defaults to 0.1, which felt heavy.
+const SCROLL_CATCH_UP = 0.18
+
 // Eased wheel scrolling for the landing page only. Touch scrolling stays native.
 export function useSmoothScroll() {
   useEffect(() => {
     // Lenis measures the page with ResizeObserver; without one, scrolling stays native.
     if (prefersReducedMotion() || !('ResizeObserver' in window)) return
-    const lenis = new Lenis({ autoRaf: true })
+    const lenis = new Lenis({ autoRaf: true, lerp: SCROLL_CATCH_UP })
     return () => lenis.destroy()
   }, [])
 }

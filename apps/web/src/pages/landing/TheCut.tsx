@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { shortLinkLabel } from '@/lib/short-link'
+import { cn } from '@/lib/utils'
 import { prefersReducedMotion } from './motion'
 
 // A sample address; this short link does not exist.
@@ -8,12 +9,10 @@ const SAMPLE_URL =
 const SAMPLE_SLUG = 'Wq0_m7e'
 
 // How far the page scrolls while the section is pinned.
-const PIN_TRAVEL_PX = 900
-// The cut waits a little at each end, so both the long URL and the short link get a still moment.
-const CUT_START = 0.1
-const CUT_END = 0.9
-
-const clamp01 = (value: number) => Math.min(Math.max(value, 0), 1)
+const PIN_TRAVEL_PX = 500
+// Scroll past this share of the pinned distance and the cut plays; scroll back above it and it undoes.
+const CUT_AT = 0.35
+const CUT_MOTION = 'duration-700 ease-out-expo'
 
 function Intro() {
   return (
@@ -43,17 +42,15 @@ function Addresses() {
   )
 }
 
-// The section pins while the page scrolls, and the scroll drives a cut line across the long URL:
-// down wipes it away and leaves the short link, back up puts it together again.
+// The section pins while the page scrolls. Passing the threshold snaps the cut line across the
+// long URL and leaves the short link; scrolling back above it puts the long URL together again.
 function PinnedCut() {
   const section = useRef<HTMLElement>(null)
-  const stage = useRef<HTMLDivElement>(null)
+  const [isCut, setIsCut] = useState(false)
 
   useEffect(() => {
     function update() {
-      const progress = -section.current!.getBoundingClientRect().top / PIN_TRAVEL_PX
-      const cut = clamp01((progress - CUT_START) / (CUT_END - CUT_START))
-      stage.current!.style.setProperty('--cut', String(cut))
+      setIsCut(-section.current!.getBoundingClientRect().top / PIN_TRAVEL_PX > CUT_AT)
     }
     update()
     window.addEventListener('scroll', update, { passive: true })
@@ -64,14 +61,28 @@ function PinnedCut() {
     <section ref={section} aria-labelledby="cut-title" style={{ height: `calc(100svh + ${PIN_TRAVEL_PX}px)` }}>
       <div className="sticky top-0 flex h-svh flex-col justify-center">
         <Intro />
-        <div ref={stage} aria-hidden className="relative mt-14 h-[1.6em] text-lg sm:mt-20 sm:text-4xl">
-          <span className="link-text absolute inset-0 [clip-path:inset(-1em_0_-1em_calc(var(--cut,0)*100%))] whitespace-nowrap text-muted-foreground [mask-image:linear-gradient(to_right,#000_75%,transparent)] [overflow-wrap:normal]">
+        <div aria-hidden className="relative mt-14 h-[1.6em] text-lg sm:mt-20 sm:text-4xl">
+          <span
+            className={cn(
+              'link-text absolute inset-0 whitespace-nowrap text-muted-foreground transition-[clip-path] [mask-image:linear-gradient(to_right,#000_75%,transparent)] [overflow-wrap:normal]',
+              CUT_MOTION,
+              isCut ? '[clip-path:inset(-1em_0_-1em_100%)]' : '[clip-path:inset(-1em_0_-1em_0)]',
+            )}
+          >
             {SAMPLE_URL}
           </span>
-          <span className="link-text absolute inset-0 [clip-path:inset(-1em_calc((1-var(--cut,0))*100%)_-1em_0)] font-bold">
+          <span
+            className={cn(
+              'link-text absolute inset-0 font-bold transition-[clip-path]',
+              CUT_MOTION,
+              isCut ? '[clip-path:inset(-1em_0_-1em_0)]' : '[clip-path:inset(-1em_100%_-1em_0)]',
+            )}
+          >
             {shortLinkLabel(SAMPLE_SLUG)}
           </span>
-          <span className="absolute -inset-y-4 left-[calc(var(--cut,0)*100%)] w-0.5 rounded-full bg-ring shadow-[0_0_18px_3px_var(--primary)]" />
+          <span className={cn('absolute inset-0 transition-transform', CUT_MOTION, isCut && 'translate-x-full')}>
+            <span className="absolute -inset-y-4 left-0 w-0.5 rounded-full bg-ring shadow-[0_0_18px_3px_var(--primary)]" />
+          </span>
         </div>
         <Addresses />
       </div>

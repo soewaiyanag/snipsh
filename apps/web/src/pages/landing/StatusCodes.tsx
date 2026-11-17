@@ -6,6 +6,8 @@ const GITHUB_URL = 'https://github.com/soewaiyanag/snipsh'
 const ROW_STAGGER_MS = 90
 // The pinned track needs room for cards side by side, a pointer to scroll with, and motion allowed.
 const TRACK_QUERY = '(min-width: 1024px) and (prefers-reduced-motion: no-preference)'
+// Page scroll spent per pixel the row moves sideways; under 1 so the track passes quickly.
+const SCROLL_PER_TRACK_PX = 0.6
 const SKEW_DEG_PER_PX = 0.08
 const MAX_SKEW_DEG = 5
 const SKEW_SETTLE_MS = 120
@@ -143,7 +145,7 @@ function Track() {
     let settleTimer: ReturnType<typeof setTimeout>
 
     function update() {
-      const progress = travel === 0 ? 0 : clamp(-section.current!.getBoundingClientRect().top / travel, 0, 1)
+      const progress = travel === 0 ? 0 : clamp(-section.current!.getBoundingClientRect().top / (travel * SCROLL_PER_TRACK_PX), 0, 1)
       const isMoving = progress > 0 && progress < 1
       const skew = isMoving
         ? clamp((window.scrollY - lastScrollY) * SKEW_DEG_PER_PX, -MAX_SKEW_DEG, MAX_SKEW_DEG)
@@ -170,7 +172,7 @@ function Track() {
       ref={section}
       aria-labelledby="codes-title"
       className="mt-40"
-      style={{ height: `calc(100svh + ${travel}px)` }}
+      style={{ height: `calc(100svh + ${travel * SCROLL_PER_TRACK_PX}px)` }}
     >
       <div ref={pane} className="sticky top-0 flex h-svh flex-col justify-center">
         <Intro />
