@@ -7,6 +7,7 @@ import { UsersModule } from '@/users/users.module.js';
 import { AuthController } from './auth.controller.js';
 import { AuthService } from './auth.service.js';
 import { JwtAuthGuard } from './jwt-auth.guard.js';
+import { RolesGuard } from './roles.guard.js';
 
 const ACCESS_TOKEN_LIFETIME = '1h';
 
@@ -22,6 +23,11 @@ const ACCESS_TOKEN_LIFETIME = '1h';
     }),
   ],
   controllers: [AuthController],
-  providers: [AuthService, { provide: APP_GUARD, useClass: JwtAuthGuard }],
+  // Global guards run in this order: first "who are you?", then "are you allowed?"
+  providers: [
+    AuthService,
+    { provide: APP_GUARD, useClass: JwtAuthGuard },
+    { provide: APP_GUARD, useClass: RolesGuard },
+  ],
 })
 export class AuthModule {}
