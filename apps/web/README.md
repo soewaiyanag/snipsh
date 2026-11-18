@@ -8,7 +8,7 @@
 
 Try it with the demo account: `test@gmail.com` / `hesoyam1234`
 
-![The snipsh landing page: a dark page with the headline "Long links, cut short.", a paste bar, and a glowing blue arc like a horizon](docs/landing.png)
+![The snipsh landing page: a dark page with the headline "Long links, cut short.", and a paste bar with a live check on the URL](docs/landing.png)
 
 This was written with an AI assistant, Claude Opus 5.5.
 
@@ -16,7 +16,7 @@ This was written with an AI assistant, Claude Opus 5.5.
 
 The links and click figures below come from the sample data in the mock API, not from real traffic.
 
-![The links page: a paste bar to shorten a URL, then a list of short links with copy and delete actions](docs/links.png)
+![The links page: a paste bar to shorten a URL, the new short link with copy and QR code, then a list of recent links with clicks and actions](docs/links.png)
 
 ![A link's details page: its destination, three click figures and a clicks-per-day chart](docs/link-details.png)
 

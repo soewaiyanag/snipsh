@@ -13,9 +13,9 @@ This repository holds both halves: the NestJS API and the React web app.
 
 The landing page, the links page and a link's details page. The links and click figures come from the sample data in the web app's mock API, not from real traffic.
 
-![The snipsh landing page: a dark page with the headline "Long links, cut short.", a paste bar, and a glowing blue arc like a horizon](apps/web/docs/landing.png)
+![The snipsh landing page: a dark page with the headline "Long links, cut short.", and a paste bar with a live check on the URL](apps/web/docs/landing.png)
 
-![The links page: a paste bar to shorten a URL, then a list of short links with copy and delete actions](apps/web/docs/links.png)
+![The links page: a paste bar to shorten a URL, the new short link with copy and QR code, then a list of recent links with clicks and actions](apps/web/docs/links.png)
 
 ![A link's details page: its destination, three click figures and a clicks-per-day chart](apps/web/docs/link-details.png)
 
