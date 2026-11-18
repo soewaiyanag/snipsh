@@ -27,8 +27,12 @@ function Header() {
   }
 
   return (
-    <header className="flex h-16 items-center justify-between gap-4">
-      <Link to={isAuthenticated ? '/links' : '/'} aria-label="snipsh home" className="rounded-lg">
+    <header className="flex h-14 items-center justify-between gap-4 border-b border-border">
+      <Link
+        to={isAuthenticated ? '/links' : '/'}
+        aria-label="snipsh home"
+        className="rounded-md outline-none focus-visible:ring-1 focus-visible:ring-ring"
+      >
         <Wordmark />
       </Link>
       {isAuthenticated ? (
@@ -36,13 +40,13 @@ function Header() {
           <Link
             to="/account"
             title="Account settings"
-            className="truncate rounded-md text-sm text-muted-foreground hover:text-foreground"
+            className="truncate rounded-md font-mono text-xs text-muted-foreground outline-none hover:text-foreground focus-visible:ring-1 focus-visible:ring-ring"
           >
             {email}
           </Link>
           <AlertDialog>
             <AlertDialogTrigger asChild>
-              <Button variant="outline">Log out</Button>
+              <Button variant="ghost">Log out</Button>
             </AlertDialogTrigger>
             <AlertDialogContent>
               <AlertDialogHeader>
@@ -85,9 +89,12 @@ export function AppLayout() {
       <main id="main" className="flex-1 pb-16">
         <Outlet />
       </main>
-      <footer className="flex flex-wrap items-center justify-between gap-2 border-t py-6 text-sm text-muted-foreground">
+      <footer className="flex flex-wrap items-center justify-between gap-2 border-t border-border py-6 font-mono text-xs text-muted-foreground">
         <span>snipsh: short for snip short</span>
-        <Link to="/report" className="rounded-md hover:text-foreground">
+        <Link
+          to="/report"
+          className="rounded-md outline-none hover:text-foreground focus-visible:ring-1 focus-visible:ring-ring"
+        >
           Report a harmful link
         </Link>
       </footer>

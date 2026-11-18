@@ -8,6 +8,12 @@ Things the web app still needs from the API in [`apps/api`](../api). The web app
 
 **Ask:** return `{ id, email, plan, createdAt }` from `/auth/me`. With the plan, the UI could explain the free limits (custom slugs, number of links) before the user hits a `403`.
 
+## 2. A click count on every link in the list
+
+The links list shows clicks per row, but `Link` has no count, and calling `/links/:id/stats` for every row would be 20 extra requests per page.
+
+**Ask:** add `clicks: number` (total clicks) to each item of `GET /links`, for example with a `_count` on the clicks relation. The mock API already sends it; against the real API the list shows a dash until it exists.
+
 ## Noted, no action needed
 
 - Another user's link answers `403` ("belongs to another user"), which confirms the id exists. The web app shows it as "does not exist"; a `404` would reveal less.

@@ -1,32 +1,33 @@
 import { CheckIcon, CopyIcon } from 'lucide-react'
-import { useState } from 'react'
-import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
-import { shortLinkLabel, shortLinkUrl } from '@/lib/short-link'
+import { shortLinkLabel } from '@/lib/short-link'
+import { cn } from '@/lib/utils'
+import { useCopyShortLink } from './use-copy-short-link'
 
-const COPIED_FEEDBACK_MS = 1600
-
-type CopyButtonProps = { slug: string; variant?: 'secondary' | 'default' }
-
-export function CopyButton({ slug, variant = 'secondary' }: CopyButtonProps) {
-  const [isCopied, setIsCopied] = useState(false)
-
-  async function copy() {
-    try {
-      await navigator.clipboard.writeText(shortLinkUrl(slug))
-      toast.success('Copied', { description: shortLinkLabel(slug) })
-      setIsCopied(true)
-      setTimeout(() => setIsCopied(false), COPIED_FEEDBACK_MS)
-    } catch {
-      toast.error('Could not copy. Select the link and copy it by hand.')
-    }
-  }
-
+export function CopiedIcon({ isCopied }: { isCopied: boolean }) {
   return (
-    // A fixed minimum width keeps the row still while the label changes.
-    <Button variant={variant} onClick={copy} aria-label={`Copy ${shortLinkLabel(slug)}`} className="min-w-24">
-      {isCopied ? <CheckIcon /> : <CopyIcon />}
-      {isCopied ? 'Copied' : 'Copy'}
+    <span className="relative grid size-4 place-items-center *:col-start-1 *:row-start-1 *:transition-[opacity,scale] *:duration-300 *:ease-spring">
+      <CopyIcon className={cn(isCopied && 'scale-50 opacity-0')} />
+      <CheckIcon className={cn(!isCopied && 'scale-50 opacity-0')} />
+    </span>
+  )
+}
+
+type CopyButtonProps = { slug: string; iconOnly?: boolean }
+
+export function CopyButton({ slug, iconOnly }: CopyButtonProps) {
+  const { isCopied, copy } = useCopyShortLink(slug)
+  return (
+    <Button
+      variant={iconOnly ? 'ghost' : 'secondary'}
+      size={iconOnly ? 'icon' : 'default'}
+      onClick={copy}
+      aria-label={`Copy ${shortLinkLabel(slug)}`}
+      title={iconOnly ? 'Copy' : undefined}
+      className={cn(!iconOnly && 'min-w-24')}
+    >
+      <CopiedIcon isCopied={isCopied} />
+      {!iconOnly && (isCopied ? 'Copied' : 'Copy')}
     </Button>
   )
 }

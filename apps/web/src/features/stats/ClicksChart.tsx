@@ -48,17 +48,15 @@ export function ClicksChart({ days }: { days: Day[] }) {
               }}
               itemStyle={{ color: 'var(--popover-foreground)' }}
             />
-            {/* Straight segments: a smooth curve would invent values between two days.
-                The line is the landing arc's light: the ring colour with a soft glow. */}
+            {/* Straight segments: a smooth curve would invent values between two days. */}
             <Area
               type="linear"
               dataKey="count"
-              stroke="var(--ring)"
+              stroke="var(--foreground)"
               strokeWidth={1.5}
-              fill="var(--primary)"
-              fillOpacity={0.12}
-              style={{ filter: 'drop-shadow(0 0 6px var(--primary))' }}
-              activeDot={{ r: 4, fill: 'var(--primary)', stroke: 'var(--background)' }}
+              fill="var(--foreground)"
+              fillOpacity={0.06}
+              activeDot={{ r: 4, fill: 'var(--foreground)', stroke: 'var(--background)' }}
               isAnimationActive={false}
             />
           </AreaChart>

@@ -1,113 +1,46 @@
-import { useState, type FormEvent } from 'react'
+import { ArrowRightIcon } from 'lucide-react'
 import { Link } from 'react-router'
-import { urlSchema } from '@/api/schemas'
-import { HorizonArc } from '@/components/HorizonArc'
 import { Button } from '@/components/ui/button'
 import { env } from '@/env'
 import { useAuth } from '@/features/auth/auth-context'
-import { randomSlug, shortLinkLabel } from '@/lib/short-link'
+import { CreateLinkBar } from '@/features/links/CreateLinkBar'
 
-import { ClickLine } from './landing/ClickLine'
-import { useSmoothScroll } from './landing/motion'
-import { StatusCodes } from './landing/StatusCodes'
-import { TheCut } from './landing/TheCut'
-
-type Preview = { slug: string } | { error: string }
-
+// The bar is the page. A visitor who is not logged in is sent to log in on Enter, and comes back
+// to /links with the URL still in the bar.
 export function LandingPage() {
   const { isAuthenticated } = useAuth()
-  useSmoothScroll()
-  const [url, setUrl] = useState('')
-  const [preview, setPreview] = useState<Preview | null>(null)
-
-  // Nothing is saved here: this only shows what a short link would look like.
-  function showPreview(event: FormEvent) {
-    event.preventDefault()
-    const result = urlSchema.safeParse(url)
-    setPreview(result.success ? { slug: randomSlug() } : { error: result.error.issues[0].message })
-  }
-
-  const start = isAuthenticated
-    ? { to: '/links', label: 'Go to your links' }
-    : { to: '/register', label: 'Get started' }
 
   return (
-    <div className="relative">
-      <HorizonArc />
+    <div className="mx-auto max-w-3xl pt-16 sm:pt-28">
+      <h1 className="text-3xl font-semibold tracking-tight text-balance sm:text-4xl">
+        Long links, cut short.
+      </h1>
 
-      <section className="mx-auto flex min-h-[max(calc(100svh-4rem),48rem)] max-w-3xl flex-col items-center pt-14 text-center sm:pt-24">
-        <h1 className="text-[2.6rem] leading-[1.05] font-bold tracking-tight text-balance sm:text-7xl">
-          Long links, cut short.
-        </h1>
-        <p className="mt-5 max-w-xl text-lg text-pretty text-muted-foreground">
-          snipsh turns any long URL into a short link you can share, and counts every click it
-          gets.
-        </p>
+      <section aria-label="Make a short link" className="mt-6">
+        <CreateLinkBar />
+      </section>
 
-        <form onSubmit={showPreview} noValidate className="mt-10 w-full max-w-2xl">
-          <div className="flex items-center gap-2 rounded-full border border-input bg-card p-1.5 pl-5 transition-[border-color,box-shadow] duration-200 hover:border-foreground/55 focus-within:border-ring focus-within:shadow-field">
-            <label htmlFor="preview-url" className="sr-only">
-              Long URL to preview
-            </label>
-            <input
-              id="preview-url"
-              type="url"
-              inputMode="url"
-              autoComplete="off"
-              spellCheck={false}
-              placeholder="Paste a long URL"
-              value={url}
-              onChange={(event) => setUrl(event.target.value)}
-              aria-invalid={preview && 'error' in preview ? true : undefined}
-              aria-describedby="preview-result"
-              className="link-text h-11 min-w-0 flex-1 bg-transparent text-base outline-none placeholder:font-sans placeholder:text-muted-foreground"
-            />
-            <Button type="submit" size="lg" className="shrink-0">
-              Shorten
-            </Button>
-          </div>
-
-          <div id="preview-result" aria-live="polite" className="mt-4 min-h-16">
-            {preview && 'error' in preview && (
-              <p className="text-sm text-destructive">{preview.error}</p>
-            )}
-            {preview && 'slug' in preview && (
-              <p
-                key={preview.slug}
-                className="mx-auto flex w-fit max-w-full animate-in flex-wrap items-center justify-center gap-x-4 gap-y-1 rounded-xl border bg-card px-5 py-3 duration-200 zoom-in-95 fade-in-0"
-              >
-                <span className="link-text text-xl font-bold">{shortLinkLabel(preview.slug)}</span>
-                <span className="text-sm text-muted-foreground">
-                  A preview only.{' '}
-                  <Link to={start.to} className="font-medium text-foreground underline hover:no-underline">
-                    {isAuthenticated ? 'Make it for real' : 'Create an account'}
-                  </Link>{' '}
-                  to make it work.
-                </span>
-              </p>
-            )}
-          </div>
-        </form>
-
-        {env.useMocks && !isAuthenticated && (
-          <Button asChild variant="ghost" size="lg">
-            <Link to="/login">Explore the demo account</Link>
+      <div className="mt-10 flex flex-wrap items-center gap-x-4 gap-y-3 border-t border-border pt-6 text-sm text-muted-foreground">
+        {isAuthenticated ? (
+          <Button asChild variant="outline">
+            <Link to="/links">
+              Your links <ArrowRightIcon />
+            </Link>
           </Button>
+        ) : (
+          <>
+            <p className="mr-auto">Log in to keep your links and count their clicks.</p>
+            {env.useMocks && (
+              <Button asChild variant="ghost">
+                <Link to="/login">Explore the demo account</Link>
+              </Button>
+            )}
+            <Button asChild variant="outline">
+              <Link to="/register">Create an account</Link>
+            </Button>
+          </>
         )}
-      </section>
-
-      <TheCut />
-      <ClickLine />
-      <StatusCodes />
-
-      <section className="mt-28 flex flex-col items-start gap-6 border-t pt-12 sm:mt-40 sm:flex-row sm:items-center sm:justify-between">
-        <p className="text-3xl font-semibold tracking-tight text-balance sm:text-5xl">
-          Make your first short link.
-        </p>
-        <Button asChild size="lg">
-          <Link to={start.to}>{start.label}</Link>
-        </Button>
-      </section>
+      </div>
     </div>
   )
 }

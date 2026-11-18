@@ -19,7 +19,7 @@ describe('auth redirect', () => {
 
     await logIn(user, DEMO_CREDENTIALS.password)
 
-    expect(await screen.findByRole('heading', { name: 'Your links' })).toBeInTheDocument()
+    expect(await screen.findByRole('heading', { name: 'Recent links' })).toBeInTheDocument()
     expect(router.state.location.pathname).toBe('/links')
     expect(screen.getByText(DEMO_CREDENTIALS.email)).toBeInTheDocument()
   })

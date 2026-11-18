@@ -119,7 +119,9 @@ export const handlers = [
     const links = db.links.filter(({ userId }) => userId === user.id).map(({ link }) => link)
     const start = (page - 1) * limit
     return HttpResponse.json({
-      items: links.slice(start, start + limit),
+      items: links
+        .slice(start, start + limit)
+        .map((link) => ({ ...link, clicks: db.stats.get(link.id)?.total ?? 0 })),
       total: links.length,
       page,
       limit,

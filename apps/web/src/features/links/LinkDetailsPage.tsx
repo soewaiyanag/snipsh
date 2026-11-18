@@ -80,7 +80,7 @@ export function LinkDetailsPage() {
           </span>
         </div>
         <div className="flex flex-wrap items-center gap-2">
-          <CopyButton slug={data.slug} variant="default" />
+          <CopyButton slug={data.slug} />
           <DeleteLinkButton link={data} onDeleted={() => navigate('/links')} />
         </div>
       </header>

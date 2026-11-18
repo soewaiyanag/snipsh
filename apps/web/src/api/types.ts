@@ -9,6 +9,7 @@ export type Link = {
   createdAt: string
   isActive?: boolean
   expiresAt?: string | null
+  clicks?: number // requested from the API; until it arrives the list shows a dash
 }
 
 export type Paginated<T> = { items: T[]; total: number; page: number; limit: number }

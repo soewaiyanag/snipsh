@@ -12,8 +12,9 @@ const PRODUCTION_HOST = 'snipsh-api.onrender.com'
 
 const email = z.email('Enter a valid email address')
 
+// Some browsers' URL parsers accept "https://not a url"; a space is never part of a real link.
 function isHttpUrl(value: string) {
-  return URL.canParse(value) && /^https?:$/.test(new URL(value).protocol)
+  return !/\s/.test(value) && URL.canParse(value) && /^https?:$/.test(new URL(value).protocol)
 }
 
 function isShortLink(value: string) {

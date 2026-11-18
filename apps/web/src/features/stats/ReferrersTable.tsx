@@ -27,7 +27,7 @@ export function ReferrersTable({ referrers, total }: ReferrersTableProps) {
               {/* Length carries the comparison, so no colour is needed. */}
               <span
                 aria-hidden
-                className="mt-2 block h-0.5 rounded-full bg-ring shadow-[0_0_8px_var(--primary)]"
+                className="mt-2 block h-0.5 rounded-full bg-foreground/70"
                 style={{ width: `${(count / highest) * PERCENT}%` }}
               />
             </td>
